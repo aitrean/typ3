@@ -45,7 +45,7 @@ export const decodeArguments = (
   const argBuffer = new Buffer(argString, 'hex');
   // Decode!
   const argArr = abi.rawDecode(inputTypes, argBuffer);
-  //TODO: parse checksummed addresses
+  
   const reducer = (argObj, currArg, index) => {
     const currName = inputNames[index];
     const currType = inputTypes[index];
