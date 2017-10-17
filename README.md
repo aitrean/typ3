@@ -10,6 +10,16 @@ ABI Type Generator Package -- https://github.com/Mike-Stupich/typ3-cli
 - Currently only supports ABI functions 
 - Fully typed contracts and rpc-calls
 
+This library allows you to dynamically construct a fully-typed (more on this below) object representation of the ABI, including methods for encoding, decoding, and calling the contract.
+
+It provides a lightweight alternative to web3’s contract interaction functionalities, with full type support and better error reporting.
+
+We accomplish better reporting by using objects instead of arrays for the contract arguments and return values. This allows us to specify value typings for each argument, and provide more specific error based on the specific invalid input.
+
+In addition, the library makes heavy use of ES6 proxies to intercept on method invocations on contract methods and node RPC methods. For contracts, this provides the ability to re-route method invocations depending on if a method is constant / payable or not. For RPC methods, they're used to keep both the RPC requests and the node library itself separate, with the proxy acting as a bridge between the two.
+
+RPC methods themselves are designed to be highly configurable, with the ability to have pre/post processing functions and custom error handlers of the call. (Ex. Convert any BigNumber input to a string before the actual RPC call is sent, map the returned data to the node in any way you'd like, handle any RPC errors in a custom handler)
+
 ##  Node(endpoint) 
 
 Returns an instance that provides a connection to a node with rpc methods as described in https://github.com/ethereum/wiki/wiki/JSON-RPC. 
