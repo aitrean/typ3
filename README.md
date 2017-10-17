@@ -1,3 +1,5 @@
+# THIS IS ALPHA SOFTWARE.
+
 # typ3 -- A typescript, promise-only alternative to web3
 
 ABI Type Generator Package -- https://github.com/Mike-Stupich/typ3-cli
