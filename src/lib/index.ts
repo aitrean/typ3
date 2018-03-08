@@ -37,7 +37,7 @@ const ConnectedContract = <T>(
   defaultTxObj: Partial<ITransactionObj> = {}
 ) => {
   const routeCalls = {
-    get(target: any, propKey: any) {
+    get(contract: any, propKey: any) {
       const contractMethod: IFunctionFactory = contract[propKey];
       const isConstant = contractMethod.constant;
       const isParamless = contractMethod.paramless;
