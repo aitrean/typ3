@@ -6,10 +6,14 @@ import {
 } from './parsers';
 import { objReduce } from './utils';
 
+interface ArgumentsObject {
+  [name: string]: string
+}
+
 export const makeArgHandlers = (inputs: IAbiFunction['inputs']): IFuncArgs => {
-  const reducer = (accumulator, currInput) => {
+  const reducer = (accumulator: IFuncArgs, currInput: IAbiFunction) => {
     const { name, type } = currInput;
-    const processInput = inputToParse => ({
+    const processInput = (inputToParse: IAbiFunction) => ({
       value: parsePreEncodedValue(type, inputToParse)
     });
     const paramaterHandler = { processInput, name, type };
@@ -46,7 +50,7 @@ export const decodeArguments = (
   // Decode!
   const argArr = abi.rawDecode(inputTypes, argBuffer);
   
-  const reducer = (argObj, currArg, index) => {
+  const reducer = (argObj: ArgumentsObject, currArg: any, index: number) => {
     const currName = inputNames[index];
     const currType = inputTypes[index];
     return {
@@ -70,7 +74,7 @@ export const decodeReturnValue = (
 
   const retArr = abi.rawDecode(outputTypes, retBuffer);
 
-  const reducer = (argObj, currRet, index) => {
+  const reducer = (argObj: ArgumentsObject, currRet: any, index: number) => {
     const name = outputNames[index];
     const type = outputTypes[index];
 

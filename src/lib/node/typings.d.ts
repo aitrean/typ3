@@ -2,8 +2,11 @@ interface INode {
   endpoint: string;
 }
 
+type SendRpcRequest = (request: IRPCRequestObj) => Promise<any>;
+type SetEndpoint = (endpoint: string) => void;
+
 interface IAugmentedNode {
-  node: INode;
+  [key: string]: any //TODO add real typings
   sendRpcRequest: (request: IRPCRequestObj) => Promise<any>;
   setEndpoint: (endpoint: string) => void;
 }

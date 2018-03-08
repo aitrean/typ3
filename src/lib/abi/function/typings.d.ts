@@ -3,9 +3,9 @@ type IO = { name: string; type: string };
 interface IFunctionFactory {
   constant: boolean;
   paramless: boolean;
-  decodeArguments: (args) => IDecode;
-  decodeReturnValue: (ret) => IDecode;
-  encodeArguments: (args) => string;
+  decodeArguments: (args: string) => IDecode;
+  decodeReturnValue: (ret: string) => IDecode;
+  encodeArguments: (args: any) => string;
 }
 
 interface IAbiFunction {
@@ -31,11 +31,9 @@ interface IAugmentedAbiFunction {
 
 type IFuncOutputMappings = string[];
 
-type IProcessInput = (inputToParse) => any;
-
 interface IFuncArgs {
   [name: string]: {
-    processInput: IProcessInput;
+    processInput: (inputToParse: any) => any;
     name: IAbiFunction['name'];
     type: IAbiFunction['type'];
   };

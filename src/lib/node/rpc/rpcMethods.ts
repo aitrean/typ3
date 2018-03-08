@@ -272,7 +272,7 @@ const shh_getMessages = (filterId: string) => ({
   params: [filterId]
 });
 
-const rpcMethods = {
+const rpcMethods: any = {
   eth_call,
   eth_sendRawTransaction,
   eth_sendTransaction,
@@ -323,22 +323,22 @@ const rpcMethods = {
   shh_getMessages
 };
 
-export const rerouteRPCMethodsHandler = obj => {
+export const rerouteRPCMethodsHandler = (obj: any) => {
   const rerouteRPC = {
-    get(node: IAugmentedNode, propKey) {
+    get(node: IAugmentedNode, propKey: string) {
       const rpcMethod = rpcMethods[propKey];
       const nodeMethod = node[propKey];
       if (!rpcMethod && !nodeMethod) {
         throw Error(`${propKey} is not an RPC or Node method`);
       }
       if (nodeMethod) {
-        const result = (...args) => nodeMethod(...args);
+        const result = (arg: IRPCRequestObj | string) => nodeMethod(arg);
         return result;
       } else {
-        return (...args) => {
-          const call = rpcMethod(...args);
+        return (arg: IRPCRequestObj | string) => {
+          const call = rpcMethod(arg);
           const rpcObj: IRPCRequestObj = {
-            txObj: generateTxObj(call),
+            txObj: generateTxObj(call) as any,
             postprocessor: JSONPostParser(call.parser),
             errorHandler: JSONErrorHandler(call.errorHandler)
           };

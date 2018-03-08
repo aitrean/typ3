@@ -1,17 +1,15 @@
 import { CreateContract } from './abi';
 import { ProxiedNode, IProxiedNode } from './node';
 
-export { ProxiedNode, CreateContract, ConnectedContract };
-
 interface IHandleCallParams {
-  userArgs;
+  userArgs: any[] | null
   txObj: ICallTxObj;
   func: IFunctionFactory;
   node: IProxiedNode;
 }
 
 interface IHandleSendParams {
-  userArgs;
+  userArgs: any[] | null
   txObj: ITransactionObj;
   func: IFunctionFactory;
   node: IProxiedNode;
@@ -34,12 +32,12 @@ const handleSend = async (args: IHandleSendParams) => {
 };
 
 const ConnectedContract = <T>(
-  contract,
+  contract: any,
   node: IProxiedNode,
   defaultTxObj: Partial<ITransactionObj> = {}
 ) => {
   const routeCalls = {
-    get(contract, propKey) {
+    get(target: any, propKey: any) {
       const contractMethod: IFunctionFactory = contract[propKey];
       const isConstant = contractMethod.constant;
       const isParamless = contractMethod.paramless;
@@ -47,11 +45,11 @@ const ConnectedContract = <T>(
         throw Error(`${propKey} is not a valid contract method`);
       }
 
-      const returnFunc = (userArgs, txObj) => {
+      const returnFunc = (userArgs: any[], txObj: ICallTxObj | ITransactionObj) => {
         const mergedTxObj = isParamless
           ? { ...defaultTxObj, ...userArgs }
           : { ...defaultTxObj, ...txObj };
-        const methodArgs = {
+        const methodArgs: any = { //TODO fix issue between ICallTxObj and methodArgs
           func: contractMethod,
           node,
           txObj: mergedTxObj,
@@ -65,3 +63,5 @@ const ConnectedContract = <T>(
   };
   return new Proxy(contract, routeCalls) as T;
 };
+
+export { ProxiedNode, CreateContract, ConnectedContract };

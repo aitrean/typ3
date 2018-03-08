@@ -31,8 +31,8 @@ Supplied Arguments: ${JSON.stringify(userSuppliedArgs, null, 2)}
 };
 
 export const parsePostDecodedValue = (type: string, value: any): string => {
-  const valueMapping = {
-    address: val => toChecksumAddress(val.toString(16))
+  const valueMapping: any = {
+    address: (val: any) => toChecksumAddress(val.toString(16))
   };
 
   return valueMapping[type]
