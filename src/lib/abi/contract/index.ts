@@ -42,5 +42,10 @@ const selector: Selector = {
   [AbiMethodTypes.function]: (
     abiFunc: IAbiFunction,
     outputMappings: IFuncOutputMappings
+  ) => FunctionFactory(abiFunc, outputMappings),
+
+  [AbiMethodTypes.constructor]: (
+    abiFunc: IAbiFunction,
+    outputMappings: IFuncOutputMappings
   ) => FunctionFactory(abiFunc, outputMappings)
 };
