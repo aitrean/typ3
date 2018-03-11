@@ -1,39 +1,44 @@
+import { ConstructorFactory } from './../function/index';
 import { FunctionFactory } from '../function';
 import { objReduce } from '../function/components/utils';
+import { IAbiFunction, IFuncOutputMappings, IAbiBehaviour, IAbiConstructor } from '../function/typings';
+import { IOutputMappings } from './typings';
 
-enum AbiMethodTypes {
+const constructorCall = 'new'  //TODO move this
+
+export enum AbiMethodTypes {
   function = 'function',
   event = 'event',
   constructor = 'constructor'
 }
 
-interface Selector {
-  [key: string]: any
+export interface Selector {
+  [AbiMethodTypes.function]: any
+  [AbiMethodTypes.event]: any
+  [AbiMethodTypes.constructor]: any
 }
 interface Contract {
-  [name: string]: ContractMethod
-}
-
-interface ContractMethod {
-  name: string
-  type: IAbiFunction
+  [name: string]: IAbiBehaviour 
 }
 
 export const CreateContract = <T>(
-  abi: IAbiFunction[],
+  abi: IAbiBehaviour[],
   outputMappings: IOutputMappings = {}
 ) => {
-  const reducer = (compiledContract: Contract, currMethod: IAbiFunction) => {
+  let constructorDefinition: IAbiConstructor | undefined;
+  const reducer = (compiledContract: Contract, currMethod: IAbiBehaviour) => {
     const { name, type } = currMethod;
     const handler = selector[type];
-    return handler
-      ? {
-          ...compiledContract,
-          [name]: handler(currMethod, outputMappings[name])
-        }
-      : compiledContract;
-  };
-  const contract = objReduce(abi, reducer);
+    if(type === AbiMethodTypes.constructor){
+      constructorDefinition = handler(currMethod)
+    }
+    return handler && name ? {
+      ...compiledContract,
+      [name]: handler(currMethod, outputMappings[name])
+    } : compiledContract
+  }
+  let contract = objReduce(abi, reducer);
+  contract[constructorCall] = constructorDefinition ? constructorDefinition : selector[AbiMethodTypes.constructor]
   return contract as T;
 };
 
@@ -45,7 +50,11 @@ const selector: Selector = {
   ) => FunctionFactory(abiFunc, outputMappings),
 
   [AbiMethodTypes.constructor]: (
+    abiFunc: IAbiConstructor,
+  ) => ConstructorFactory(abiFunc),
+
+  [AbiMethodTypes.event]: (
     abiFunc: IAbiFunction,
     outputMappings: IFuncOutputMappings
-  ) => FunctionFactory(abiFunc, outputMappings)
+  ) => ''
 };

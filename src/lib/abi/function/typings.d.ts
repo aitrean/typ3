@@ -1,6 +1,9 @@
+import { AbiMethodTypes } from './../contract/index';
+import { IProxiedNode } from './../../node/index';
 type IO = { name: string; type: string };
 
 interface IFunctionFactory {
+  type: AbiMethodTypes.function;
   constant: boolean;
   paramless: boolean;
   decodeArguments: (args: string) => IDecode;
@@ -8,13 +11,35 @@ interface IFunctionFactory {
   encodeArguments: (args: any) => string;
 }
 
+interface IConstructorFactory {
+  type: AbiMethodTypes.constructor
+  paramless: boolean;
+  encodeArguments: (args: any) => string;
+}
+
+interface IEventFactory {
+  type: 'event'
+}
+
 interface IAbiFunction {
+  type: AbiMethodTypes.function;
   name: string;
   inputs: IO[];
   outputs: IO[];
   constant: boolean;
-  type: string;
   payable: boolean;
+}
+
+interface IAbiConstructor {
+  type: AbiMethodTypes.constructor
+  name: "new"
+  inputs: IO[]
+  payable: boolean
+}
+
+interface IAbiEvent {
+  name: string
+  type: AbiMethodTypes.event
 }
 
 interface IAugmentedAbiFunction {
@@ -29,6 +54,17 @@ interface IAugmentedAbiFunction {
   argHandlers: IFuncArgs;
 }
 
+interface IAugmentedConstructor {
+  abi: IAbiConstructor
+  derived: {
+    inputTypes: string[],
+    inputNames: string[]
+  }
+  argHandlers: IFuncArgs;
+}
+
+type IFactory = IConstructorFactory | IFunctionFactory | IEventFactory
+type IAbiBehaviour = IAbiConstructor | IAbiFunction
 type IFuncOutputMappings = string[];
 
 interface IFuncArgs {

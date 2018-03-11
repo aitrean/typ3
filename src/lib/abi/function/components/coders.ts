@@ -5,6 +5,7 @@ import {
   parseSuppliedArgs
 } from './parsers';
 import { objReduce } from './utils';
+import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs } from '../typings';
 
 interface ArgumentsObject {
   [name: string]: string

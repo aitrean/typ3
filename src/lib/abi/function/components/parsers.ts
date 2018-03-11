@@ -1,5 +1,6 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isBigNumber } from './utils';
+import { IUserSuppliedArgs, IAugmentedAbiFunction } from '../typings';
 
 export const parseSuppliedArgs = (
   userSuppliedArgs: IUserSuppliedArgs,
@@ -7,7 +8,7 @@ export const parseSuppliedArgs = (
 ) => {
   const { derived: { inputNames }, argHandlers } = func;
   const errArr: string[] = [];
-  const parsedResult = inputNames.map(name => {
+  const parsedResult = inputNames.map((name: any) => {
     const { type } = argHandlers[name];
     //TODO: parse args based on type
     if (!userSuppliedArgs[name]) {

@@ -1,6 +1,11 @@
+import { AbiMethodTypes, Selector } from './abi/contract/index';
 import { CreateContract } from './abi';
 import { ProxiedNode, IProxiedNode } from './node';
+import { IFunctionFactory, IFactory, IConstructorFactory } from './abi/function/typings';
+import { IContract } from './abi/contract/typings';
+import { solc } from 'solc'
 
+//TODO move these interfaces into a typings folder
 interface IHandleCallParams {
   userArgs: any[] | null;
   txObj: ICallTxObj;
@@ -8,12 +13,16 @@ interface IHandleCallParams {
   node: IProxiedNode;
 }
 
-interface IHandleSendParams {
+interface IHandleSendParams extends IHandleCallParams {
+  txObj: ITransactionObj;
+}
+
+interface IHandleInitParams {
   userArgs: any[] | null;
   txObj: ITransactionObj;
+  constructor: IConstructorFactory;
   node: IProxiedNode;
-  func: IFunctionFactory;
-  contract?: string;
+  contract: string;
 }
 
 const handleCall = async (args: IHandleCallParams) => {
@@ -25,56 +34,71 @@ const handleCall = async (args: IHandleCallParams) => {
 };
 
 const handleSend = async (args: IHandleSendParams) => {
-  const { userArgs, func, node, txObj, contract } = args;
-  if(contract){
-    const contractData = await node.eth_compileSolidity(contract)
-    const response = await node.eth_sendTransaction({ data: contractData, ...txObj });
-    return response;
-  } 
-  if(func){
-    const data = func.encodeArguments(userArgs);
-    const response = await node.eth_sendTransaction({ data, ...txObj });
-    const parsedResponse = func.decodeReturnValue(response);
-    return parsedResponse;
-  }
-  throw Error('could not find a function or constructor on the send parameters')
+  const { userArgs, func, node, txObj } = args;
+  const data = func.encodeArguments(userArgs);
+  const response = await node.eth_sendTransaction({ data, ...txObj });
+  const parsedResponse = func.decodeReturnValue(response);
+  return parsedResponse;
 };
 
+const handleInit = async (args: IHandleInitParams) => {
+  const { userArgs, constructor, node, txObj } = args;
+  const data = constructor.encodeArguments(args) //TODO move this into coders
+  const response = await node.eth_sendTransaction({ data, ...txObj });
+  return response;
+}
+
 const ConnectedContract = <T>(
-  contract: any,
+  contract: IContract,
   node: IProxiedNode,
   defaultTxObj: Partial<ITransactionObj> = {}
 ) => {
   const routeCalls = {
-    get(contract: any, propKey: any) {
+    get(contract: IContract, propKey: any) {
       if (!Object.getOwnPropertyNames(contract).includes(propKey)) {
         return contract[propKey];
       }
-      const contractMethod: IFunctionFactory = contract[propKey];
-      const isConstant = contractMethod.constant;
-      const isParamless = contractMethod.paramless;
-      const isConstructor = propKey === 'new'
+      const contractMethod: IFactory = contract[propKey];
       if (!contractMethod) {
         throw Error(`${propKey} is not a valid contract method`);
       }
-
-      const returnFunc = (
-        userArgs: any[],
-        txObj: ICallTxObj | ITransactionObj
-      ) => {
-        const mergedTxObj = isParamless
-          ? { ...defaultTxObj, ...userArgs }
-          : { ...defaultTxObj, ...txObj };
-        const methodArgs: any = { //TODO fix issue between ICallTxObj and methodArgs
-          func: contractMethod,
-          node,
-          txObj: mergedTxObj,
-          userArgs: isParamless ? null : userArgs
+      switch(contractMethod.type){
+        case(AbiMethodTypes.function):
+         return (
+          userArgs: any[],
+          txObj: ICallTxObj | ITransactionObj
+        ) => {
+          const isConstant = contractMethod.constant;
+          const isParamless = contractMethod.paramless;
+          const mergedTxObj = isParamless
+            ? { ...defaultTxObj, ...userArgs }
+            : { ...defaultTxObj, ...txObj };
+          const methodArgs: any = { //TODO fix issue between ICallTxObj and methodArgs
+            func: contractMethod,
+            node,
+            txObj: mergedTxObj,
+            userArgs: isParamless ? null : userArgs
+          };
+          return isConstant ? handleCall(methodArgs) : handleSend(methodArgs);
         };
-        return isConstant ? handleCall(methodArgs) : handleSend(methodArgs);
-      };
-
-      return returnFunc;
+        case(AbiMethodTypes.constructor):
+          return (
+            userArgs: any[],
+            txObj: ITransactionObj
+          ) => {
+            const isParamless = contractMethod.paramless
+            const mergedTxObj = isParamless
+            ? { ...defaultTxObj, ...userArgs }
+            : { ...defaultTxObj, ...txObj }
+            const methodArgs: any = {
+              constructor: contractMethod,
+              node,
+              txObj: mergedTxObj,
+              userArgs: isParamless ? null : userArgs
+            }
+            return handleInit(methodArgs);
+          }
+      }
     }
   };
   return new Proxy(contract, routeCalls) as T;
