@@ -3,7 +3,6 @@ import { CreateContract } from './abi';
 import { ProxiedNode, IProxiedNode } from './node';
 import { IFunctionFactory, IFactory, IConstructorFactory } from './abi/function/typings';
 import { IContract } from './abi/contract/typings';
-import { solc } from 'solc'
 
 //TODO move these interfaces into a typings folder
 interface IHandleCallParams {
@@ -43,7 +42,7 @@ const handleSend = async (args: IHandleSendParams) => {
 
 const handleInit = async (args: IHandleInitParams) => {
   const { userArgs, constructor, node, txObj } = args;
-  const data = constructor.encodeArguments(args) //TODO move this into coders
+  const data = `${txObj.data}${constructor.encodeArguments(args)}` //TODO move this into coders
   const response = await node.eth_sendTransaction({ data, ...txObj });
   return response;
 }
