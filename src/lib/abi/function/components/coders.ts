@@ -5,7 +5,7 @@ import {
   parseSuppliedArgs
 } from './parsers';
 import { objReduce } from './utils';
-import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs } from '../typings';
+import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs, IAugmentedAbiConstructor } from '../typings';
 
 interface ArgumentsObject {
   [name: string]: string
@@ -38,6 +38,17 @@ export const encodeArguments = (
   const encodedArgs = abi.rawEncode(inputTypes, args).toString('hex');
   return `0x${methodSelector}${encodedArgs}`;
 };
+
+export const encodeConstructor = (
+  suppliedInputs: IArgs = {},
+  byteCode: string | undefined,
+  constructor: IAugmentedAbiConstructor
+) => {
+  const { derived: { inputTypes } } = constructor
+  const args = parseSuppliedArgs(suppliedInputs, constructor)
+  const encodedArgs = abi.rawEncode(inputTypes, args)
+  return `0x${byteCode}${encodedArgs}`
+}
 
 export const decodeArguments = (
   argString: string,

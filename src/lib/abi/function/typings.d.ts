@@ -14,7 +14,7 @@ interface IFunctionFactory {
 interface IConstructorFactory {
   type: AbiMethodTypes.constructor
   paramless: boolean;
-  encodeArguments: (args: any) => string;
+  encodeArguments: (args: any, byteCode: string | undefined) => string;
 }
 
 interface IEventFactory {
@@ -54,7 +54,7 @@ interface IAugmentedAbiFunction {
   argHandlers: IFuncArgs;
 }
 
-interface IAugmentedConstructor {
+interface IAugmentedAbiConstructor {
   abi: IAbiConstructor
   derived: {
     inputTypes: string[],

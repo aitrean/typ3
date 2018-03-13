@@ -1,10 +1,10 @@
 import { toChecksumAddress } from 'ethereumjs-util';
 import { isBigNumber } from './utils';
-import { IUserSuppliedArgs, IAugmentedAbiFunction } from '../typings';
+import { IUserSuppliedArgs, IAugmentedAbiFunction, IAugmentedAbiConstructor } from '../typings';
 
 export const parseSuppliedArgs = (
   userSuppliedArgs: IUserSuppliedArgs,
-  func: IAugmentedAbiFunction
+  func: IAugmentedAbiFunction | IAugmentedAbiConstructor
 ) => {
   const { derived: { inputNames }, argHandlers } = func;
   const errArr: string[] = [];
@@ -21,10 +21,7 @@ export const parseSuppliedArgs = (
   });
   if (errArr.length > 0) {
     const errStr = errArr.join('\n');
-    throw Error(`
-
-${errStr}
-Supplied Arguments: ${JSON.stringify(userSuppliedArgs, null, 2)} 
+    throw Error(`${errStr} Supplied Arguments: ${JSON.stringify(userSuppliedArgs, null, 2)} 
 `);
   } else {
     return parsedResult;

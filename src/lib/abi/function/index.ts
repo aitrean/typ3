@@ -4,9 +4,10 @@ import {
   makeArgHandlers,
   decodeArguments,
   decodeReturnValue,
-  encodeArguments
+  encodeArguments,
+  encodeConstructor
 } from './components/coders';
-import { IAbiFunction, IFuncOutputMappings, IFunctionFactory, IAugmentedAbiFunction, IConstructorFactory, IAugmentedConstructor, IAbiConstructor } from './typings';
+import { IAbiFunction, IFuncOutputMappings, IFunctionFactory, IAugmentedAbiFunction, IAugmentedAbiConstructor, IConstructorFactory, IAbiConstructor } from './typings';
 
 export const FunctionFactory = (
   abiFunc: IAbiFunction,
@@ -51,7 +52,7 @@ export const ConstructorFactory = (
   const argHandlers = makeArgHandlers(inputs);
   const inputNames = inputs.map(({ name }) => name)
   const inputTypes = inputs.map(({ type }) => type)
-  const augmentedFunc: IAugmentedConstructor = {
+  const augmentedConstructor: IAugmentedAbiConstructor = {
     abi: abiConstructor,
     argHandlers,
     derived: {
@@ -61,7 +62,7 @@ export const ConstructorFactory = (
   }
   return {
     type: AbiMethodTypes.constructor,
-    paramless: augmentedFunc.abi.inputs.length === 0,
-    encodeArguments: args => abi.rawEncode(inputTypes, args).toString('hex')
+    paramless: augmentedConstructor.abi.inputs.length === 0,
+    encodeArguments: (args, byteCode) => encodeConstructor(args, byteCode, augmentedConstructor)
   }
 }

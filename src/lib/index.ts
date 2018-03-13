@@ -24,6 +24,8 @@ interface IHandleInitParams {
   contract: string;
 }
 
+type AtConstructor = (address: string) => any;
+
 const handleCall = async (args: IHandleCallParams) => {
   const { userArgs, func, node, txObj } = args;
   const data = func.encodeArguments(userArgs);
@@ -42,8 +44,10 @@ const handleSend = async (args: IHandleSendParams) => {
 
 const handleInit = async (args: IHandleInitParams) => {
   const { userArgs, constructor, node, txObj } = args;
-  const data = `${txObj.data}${constructor.encodeArguments(args)}` //TODO move this into coders
+  const { data } = txObj
+  const contractData = constructor.encodeArguments(userArgs, data);
   const response = await node.eth_sendTransaction({ data, ...txObj });
+  
   return response;
 }
 
