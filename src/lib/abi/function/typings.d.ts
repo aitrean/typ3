@@ -17,10 +17,6 @@ interface IConstructorFactory {
   encodeArguments: (args: any, byteCode: string | undefined) => string;
 }
 
-interface IEventFactory {
-  type: 'event'
-}
-
 interface IAbiFunction {
   type: AbiMethodTypes.function;
   name: string;
@@ -31,10 +27,10 @@ interface IAbiFunction {
 }
 
 interface IAbiConstructor {
-  type: AbiMethodTypes.constructor
-  name: "new"
-  inputs: IO[]
-  payable: boolean
+  type: AbiMethodTypes.constructor;
+  name: "new";
+  inputs: IO[];
+  payable: boolean;
 }
 
 interface IAbiEvent {

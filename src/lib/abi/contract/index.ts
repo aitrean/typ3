@@ -4,7 +4,7 @@ import { objReduce } from '../function/components/utils';
 import { IAbiFunction, IFuncOutputMappings, IAbiBehaviour, IAbiConstructor } from '../function/typings';
 import { IOutputMappings } from './typings';
 
-const constructorCall = 'new'  //TODO move this
+export const constructorCall = 'new'  //TODO move this
 
 export enum AbiMethodTypes {
   function = 'function',
@@ -14,7 +14,6 @@ export enum AbiMethodTypes {
 
 export interface Selector {
   [AbiMethodTypes.function]: any
-  [AbiMethodTypes.event]: any
   [AbiMethodTypes.constructor]: any
 }
 interface Contract {
@@ -52,9 +51,4 @@ const selector: Selector = {
   [AbiMethodTypes.constructor]: (
     abiFunc: IAbiConstructor,
   ) => ConstructorFactory(abiFunc),
-
-  [AbiMethodTypes.event]: (
-    abiFunc: IAbiFunction,
-    outputMappings: IFuncOutputMappings
-  ) => ''
 };
