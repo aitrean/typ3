@@ -2,14 +2,18 @@ import { ConstructorFactory } from './../function/index';
 import { FunctionFactory } from '../function';
 import { objReduce } from '../function/components/utils';
 import { IAbiFunction, IFuncOutputMappings, IAbiBehaviour, IAbiConstructor } from '../function/typings';
-import { IOutputMappings } from './typings';
 
 export const constructorCall = 'new'  //TODO move this
 
 export enum AbiMethodTypes {
   function = 'function',
   event = 'event',
-  constructor = 'constructor'
+  constructor = 'constructor',
+  filter = 'filter'
+}
+
+interface IOutputMappings {
+  [abiFuncName: string]: string[];
 }
 
 export interface Selector {
@@ -17,7 +21,7 @@ export interface Selector {
   [AbiMethodTypes.constructor]: any
 }
 interface Contract {
-  [name: string]: IAbiBehaviour 
+  [name: string]: IAbiBehaviour
 }
 
 export const CreateContract = <T>(
@@ -26,18 +30,22 @@ export const CreateContract = <T>(
 ) => {
   let constructorDefinition: IAbiConstructor | undefined;
   const reducer = (compiledContract: Contract, currMethod: IAbiBehaviour) => {
-    const { name, type } = currMethod;
+    const { name, type } = currMethod
     const handler = selector[type];
-    if(type === AbiMethodTypes.constructor){
-      constructorDefinition = handler(currMethod)
+    switch(type){
+      case(AbiMethodTypes.function):
+        return {
+          ...compiledContract,
+          [name]: handler(currMethod, outputMappings[name])
+        }
+      case(AbiMethodTypes.constructor):
+        return {
+          ...compiledContract,
+          ['new']: handler(currMethod) //TODO change the constructor naming scheme
+        }
     }
-    return handler && name ? {
-      ...compiledContract,
-      [name]: handler(currMethod, outputMappings[name])
-    } : compiledContract
   }
   let contract = objReduce(abi, reducer);
-  contract[constructorCall] = constructorDefinition ? constructorDefinition : selector[AbiMethodTypes.constructor]
   return contract as T;
 };
 

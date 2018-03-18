@@ -27,10 +27,10 @@ interface IAbiFunction {
 }
 
 interface IAbiConstructor {
-  type: AbiMethodTypes.constructor;
-  name: "new";
-  inputs: IO[];
-  payable: boolean;
+  name: 'new'
+  type: AbiMethodTypes.constructor
+  inputs: IO[]
+  payable: boolean
 }
 
 interface IAbiEvent {
@@ -50,6 +50,18 @@ interface IAugmentedAbiFunction {
   argHandlers: IFuncArgs;
 }
 
+interface IAugmentedAbiEvent {
+  abi: IAbiEvent;
+  derived: {
+    inputTypes: string[];
+    outputTypes: string[];
+    inputNames: string[];
+    outputNames: string[];
+  }
+  methodSelector: string
+  argHAndlers: IFuncArgs
+}
+
 interface IAugmentedAbiConstructor {
   abi: IAbiConstructor
   derived: {
@@ -59,7 +71,6 @@ interface IAugmentedAbiConstructor {
   argHandlers: IFuncArgs;
 }
 
-type IFactory = IConstructorFactory | IFunctionFactory | IEventFactory
 type IAbiBehaviour = IAbiConstructor | IAbiFunction
 type IFuncOutputMappings = string[];
 

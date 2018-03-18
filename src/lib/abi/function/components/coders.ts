@@ -44,10 +44,13 @@ export const encodeConstructor = (
   byteCode: string | undefined,
   constructor: IAugmentedAbiConstructor
 ) => {
-  const { derived: { inputTypes } } = constructor
-  const args = parseSuppliedArgs(suppliedInputs, constructor)
-  const encodedArgs = abi.rawEncode(inputTypes, args)
-  return `0x${byteCode}${encodedArgs}`
+  if(byteCode){
+    const { derived: { inputTypes } } = constructor
+    const args = parseSuppliedArgs(suppliedInputs, constructor)
+    const encodedArgs = abi.rawEncode(inputTypes, args)
+    return `0x${byteCode}${encodedArgs}`
+  }
+  throw Error('could not find bytecode in the transaction object') //TODO move this error scope
 }
 
 export const decodeArguments = (
