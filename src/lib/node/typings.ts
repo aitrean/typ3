@@ -1,82 +1,60 @@
-//TODO clean up all of these typings
-interface INode {
+export type SendRpcRequest = (request: IRPCRequestObj) => Promise<any>;
+export type SetEndpoint = (endpoint: string) => void;
+export type IEstimateGasObj = Partial<ITransactionObject>;
+export type address = string;
+export type INewBlockFilterLog = string[];
+export type INewPendingTransactionFilterLog = string[];
+export type ITopic = string | null | (string | null)[];
+export type IFilter = INewBlockFilterLog | INewPendingTransactionFilterLog | IEthNewFilterLogPending[] | IEthNewFilterLog[]
+export type IBlockNumber = string | 'earliest' | 'latest' | 'pending';
+
+export interface INode {
   endpoint: string;
 }
 
-type SendRpcRequest = (request: IRPCRequestObj) => Promise<any>;
-type SetEndpoint = (endpoint: string) => void;
-type IEstimateGasObj = Partial<ITransactionObject>;
-type address = string;
-type INewBlockFilterLog = string[];
-type INewPendingTransactionFilterLog = string[];
-type ITopic = string | null | (string | null)[];
-type IBlockNumber = string | 'earliest' | 'latest' | 'pending';
+export type IProxiedNode = IAugmentedNode & IProxiedRpcMethods;
 
-interface IFilterOptions {
+export interface IFilterOptions {
   fromBlock?: IBlockNumber;
   toBlock?: IBlockNumber;
   address?: string;
   topics?: ITopic[];
 }
-interface IAugmentedNode {
+export interface IAugmentedNode {
   [key: string]: any //TODO add real typings
   sendRpcRequest: (request: IRPCRequestObj) => Promise<any>;
   setEndpoint: (endpoint: string) => void;
 }
-interface INodeOutput {
+export interface INodeOutput {
   result: any[] | any;
 }
 
-interface IMethodAndParams {
+export interface IMethodAndParams {
   method: String;
   params: String[] | String;
 }
 
-interface IRequest {
+export interface IRequest {
   method: String;
   params: any | any[];
   id: String;
   jsonrpc: String;
 }
 
-interface IResponse {
-  id: number,
-  jsonrpc: string,
-  result: any
-}
-
-interface IStringifiedResponse extends IResponse {
-  result: string
-}
-
-interface IStringifiedResponseList extends IResponse {
-  result: string[]
-}
-
-interface IBlockResponse extends IResponse {
-  result: IBlockObj
-}
-
-interface IBooleanResponse extends IResponse {
-  result: boolean
-}
-
-type IFilter = INewBlockFilterLog | INewPendingTransactionFilterLog | IEthNewFilterLogPending[] | IEthNewFilterLog[]
-
-interface IRPCRequestObj {
+export interface IRPCRequestObj {
   txObj: IRequest;
   postprocessor?: any;
   errorHandler?: any;
 }
 
-interface IInputMappings {
+export interface IInputMappings {
   endpoint: String;
   method: String;
   params: any | any[];
   address: String;
 }
 
-interface ITransactionObject {
+export interface ITransactionObject {
   from: string,
   to?: string,
   nonce?: string,
@@ -90,19 +68,8 @@ interface ITransactionObject {
   blockNumber?: string,
   transactionIndex?:  string,
 }
-interface ITransactionResponse extends IResponse {
-  result: ITransactionObject
-}
 
-interface ITransactionOrNullResponse extends IResponse { //TODO swap out some of the ITransactionResponses with this where appropriate
-  result: ITransactionObject | null
-}
-
-interface ITransactionReceiptResponse extends IResponse {
-  result: ITransactionReceipt
-}
-
-interface IBlockObj {
+export interface IBlockObj {
   number: string;
   hash: string;
   parentHash: string;
@@ -124,7 +91,7 @@ interface IBlockObj {
   uncles: string[];
 }
 
-interface IEthNewFilterLog {
+export interface IEthNewFilterLog {
   removed: boolean;
   logIndex: string;
   transactionIndex: string;
@@ -135,7 +102,7 @@ interface IEthNewFilterLog {
   data: string | string[];
   topics: string[];
 }
-interface IEthNewFilterLogPending {
+export interface IEthNewFilterLogPending {
   removed: boolean;
   logIndex: string;
   transactionIndex: string | null;
@@ -146,7 +113,7 @@ interface IEthNewFilterLogPending {
   data: string | string[];
   topics: string[];
 }
-interface ITransactionReceipt {
+export interface ITransactionReceipt {
   transactionHash: string;
   transactionIndex: string;
   blockHash: string;
@@ -157,7 +124,7 @@ interface ITransactionReceipt {
   logs: IEthNewFilterLog[];
 }
 
-interface IProxiedRpcMethods {
+export interface IProxiedRpcMethods {
   eth_accounts: () => Promise<string[]>;
   eth_blockNumber: () => Promise<string>;
   eth_call: (tx: ITransactionObject) => Promise<string>;
@@ -190,67 +157,19 @@ interface IProxiedRpcMethods {
   shh_getMessages: (filterId: string) => Promise<any>;
   db_getString: (dbName: string, keyName: string) => Promise<string>;
   eth_submitHashrate: (hashRate: string, id: string) => Promise<boolean>;
-  eth_getBlockByHash: (
-    hash: string,
-    fullTxObj: boolean
-  ) => Promise<IBlockObj>;
-  eth_getBlockTransactionCountByNumber: (
-    blocknumber: IBlockNumber
-  ) => Promise<string>;
-  eth_getBlockByNumber: (
-    blocknumber: IBlockNumber,
-    fullTxObj: boolean
-  ) => Promise<IBlockObj>;
-  eth_getTransactionByBlockHashAndIndex: (
-    hash: string,
-    transactionIdx: string
-  ) => Promise<ITransactionObject>;
-  eth_getTransactionByBlockNumberAndIndex: (
-    blockNum: IBlockNumber,
-    transactionIdx: string
-  ) => Promise<ITransactionObject>;
-  eth_getFilterChanges: (
-    filterId: string,
-    parser?: any,
-    error?: any
-  ) => Promise<IFilter>;
-  eth_getFilterLogs: (
-    filterId: string
-  ) => Promise<IFilter>;
-  eth_getLogs: (
-    filterObj: IFilterOptions
-  ) => Promise<IFilter>;
-  eth_getStorageAt: (
-    address: string,
-    positionInStorage: string,
-    blockNumber: IBlockNumber
-  ) => Promise<string>;
-
-  eth_getTransactionCount: (
-    address: string,
-    blockNum?: IBlockNumber
-  ) => Promise<string>;
-  eth_getUncleByBlockHashAndIndex: (
-    hash: string,
-    transactionIdx: string
-  ) => Promise<IBlockObj>;
-  eth_getUncleByBlockNumberAndIndex: (
-    blockNum: IBlockNumber,
-    transactionIdx: string
-  ) => Promise<IBlockObj | null>;
-  eth_submitWork: (
-    hashNonceFound: string,
-    hashHeadersPow: string,
-    hashMixDigest: string
-  ) => Promise<boolean>;
-  db_putString: (
-    dbName: string,
-    keyName: string,
-    store: string
-  ) => Promise<boolean>;
-  db_putHex: (
-    dbName: string,
-    keyName: string,
-    storeData: string
-  ) => Promise<boolean>;
+  eth_getBlockByHash: (hash: string, fullTxObj: boolean) => Promise<IBlockObj>;
+  eth_getBlockTransactionCountByNumber: (blocknumber: IBlockNumber) => Promise<string>;
+  eth_getBlockByNumber: (blocknumber: IBlockNumber, fullTxObj: boolean) => Promise<IBlockObj>;
+  eth_getTransactionByBlockHashAndIndex: (hash: string, transactionIdx: string) => Promise<ITransactionObject>;
+  eth_getTransactionByBlockNumberAndIndex: (blockNum: IBlockNumber, transactionIdx: string) => Promise<ITransactionObject>;
+  eth_getFilterChanges: (filterId: string, parser?: any, error?: any) => Promise<IFilter>;
+  eth_getFilterLogs: (filterId: string) => Promise<IFilter>;
+  eth_getLogs: (filterObj: IFilterOptions) => Promise<IFilter>;
+  eth_getStorageAt: (address: string, positionInStorage: string, blockNumber: IBlockNumber) => Promise<string>;
+  eth_getTransactionCount: (address: string, blockNum?: IBlockNumber) => Promise<string>;
+  eth_getUncleByBlockHashAndIndex: (hash: string, transactionIdx: string) => Promise<IBlockObj>;
+  eth_getUncleByBlockNumberAndIndex: (blockNum: IBlockNumber,transactionIdx: string) => Promise<IBlockObj | null>;
+  eth_submitWork: (hashNonceFound: string, hashHeadersPow: string, hashMixDigest: string) => Promise<boolean>;
+  db_putString: (dbName: string, keyName: string, store: string) => Promise<boolean>;
+  db_putHex: (dbName: string, keyName: string, storeData: string) => Promise<boolean>;
 }

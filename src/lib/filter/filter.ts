@@ -1,8 +1,8 @@
-import { AbiMethodTypes } from './../abi/contract/index';
-import { ProxiedNode, IProxiedNode } from '../node';
-import delay from 'timeout-as-promise'
+import { IFilterOptions } from './../node/typings';
+import { IProxiedNode } from '../node';
+import { pollFilter } from './poll'
 
-interface IFilter {
+export interface IFilter {
 	stopWatching(): void,
 	get(): Promise<IFilter>,
 	watch(): void
@@ -51,10 +51,4 @@ class filter {
 			}
 		}
 	}
-}
-
-export const pollFilter = async (node: IProxiedNode, args?: any, parser?: Function, errorHandler?: Function) => { //TODO move this into a util file
-	await delay(1000)
-	const response = await node.eth_getFilterChanges(args, undefined, errorHandler)
-	return response;
 }

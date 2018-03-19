@@ -1,5 +1,6 @@
+import { ITransactionObject, IEstimateGasObj, IBlockNumber, IFilterOptions, IRPCRequestObj, IAugmentedNode } from './../typings';
 import { generateTxObj, JSONPostProcessor, JSONErrorHandler } from './jsonUtils';
-import { IProxiedNode } from '..'
+import { IProxiedNode } from '../typings'
 
 const eth_sendRawTransaction = (tx: String) => ({
   method: JsonRpcMethods.eth_sendRawTransaction,
@@ -66,7 +67,7 @@ const eth_getBlockTransactionCountByNumber = (blocknumber: IBlockNumber) => ({
   params: [blocknumber]
 });
 
-const eth_getCode = (address: string) => ({
+const eth_getCode = (address: string) => ({ //TODO review this signature
   method: JsonRpcMethods.eth_getCode,
   params: ['latest']
 });
@@ -130,7 +131,7 @@ const eth_getTransactionReceipt = (hash: string) => ({
 
 const eth_getUncleByBlockHashAndIndex = (
   hash: string,
-  transactionIdx: string
+  transactionIdx: string //TODO check this signature
 ) => ({
   method: JsonRpcMethods.eth_getUncleByBlockHashAndIndex,
   params: [hash, eth_getTransactionCount]

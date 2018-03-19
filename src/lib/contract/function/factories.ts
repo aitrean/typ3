@@ -1,4 +1,3 @@
-import { AbiMethodTypes } from './../contract/index';
 import * as abi from 'ethereumjs-abi';
 import {
   makeArgHandlers,
@@ -7,8 +6,9 @@ import {
   encodeArguments,
   encodeConstructor
 } from './components/coders';
-import { IAbiFunction, IFuncOutputMappings, IFunctionFactory, IAugmentedAbiFunction, IAugmentedAbiConstructor, IConstructorFactory, IAbiConstructor } from './typings';
+import { IAbiFunction, IFuncOutputMappings, IFunctionFactory, IAugmentedAbiFunction, IAugmentedAbiConstructor, IConstructorFactory, IAbiConstructor, AbiMethodTypes } from '../typings';
 
+/* tslint:disable */
 export const FunctionFactory = (
   abiFunc: IAbiFunction,
   outputMappings: IFuncOutputMappings = []
@@ -22,7 +22,7 @@ export const FunctionFactory = (
     ({ name }, i) => name || outputMappings[i] || `${i}`
   );
   const methodSelector = abi.methodID(name, inputTypes).toString('hex');
-
+  /* tslint:enable */
   const augmentedFunc: IAugmentedAbiFunction = {
     abi: abiFunc,
     argHandlers,

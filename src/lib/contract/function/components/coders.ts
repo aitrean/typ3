@@ -5,11 +5,7 @@ import {
   parseSuppliedArgs
 } from './parsers';
 import { objReduce } from './utils';
-import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs, IAugmentedAbiConstructor } from '../typings';
-
-interface ArgumentsObject {
-  [name: string]: string
-}
+import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs, IAugmentedAbiConstructor, ArgumentsObject } from '../../typings';
 
 export const makeArgHandlers = (inputs: IAbiFunction['inputs']): IFuncArgs => {
   const reducer = (accumulator: IFuncArgs, currInput: IAbiFunction) => {
