@@ -5,7 +5,7 @@ export const NodeFactory = (endpoint: string): IAugmentedNode => {
   const node: INode = { endpoint };
   return {
     node,
-    setEndpoint: (endpoint: string) => setEndpoint(endpoint, node),
+    setEndpoint: (end: string) => setEndpoint(end, node),
     sendRpcRequest: (request: IRPCRequestObj) => sendRpcRequest(request, node)
   };
 };

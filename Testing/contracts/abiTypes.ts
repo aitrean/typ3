@@ -35,8 +35,6 @@ succeeded: ABIFuncParamlessCallConnected<{0: boolean}>;
 }
 export type ISimpleContractConstructor = ABIFuncParamlessSendConnected
 
-
-
 interface ABIFuncParamlessCall<T = void> {
   encodeArguments(): string;
   decodeArguments(str: string): any;

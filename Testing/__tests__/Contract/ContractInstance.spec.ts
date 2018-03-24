@@ -17,7 +17,7 @@ describe('contract instantiation', async () => {
   })
 
   it('should deploy a blank contract', async () => {
-    const testAbi = require('../../Contracts/simple/SimpleContract.json');
+    const testAbi = require('../../contracts/simple/SimpleContract.json');
     const testContract = CreateContract<ISimpleContract>(testAbi)
     const testInstance = await ContractInstance<ISimpleContractConnected>(testContract, testNode, {txObj: {data: simpleContractBytecode, from: addresses[0], gas: '90000'}})
     const succeeded = (await testInstance.succeeded())[0]
@@ -26,7 +26,7 @@ describe('contract instantiation', async () => {
   })
 
   it('should deploy a contract with arguments, then instantiate from the deployment', async () => {
-    const testAbi = require('../../Contracts/complex/complexContract.json');
+    const testAbi = require('../../contracts/complex/ComplexContract.json');
     const testContract = CreateContract<IComplexContract>(testAbi)
     const deployedInstance = await ContractInstance<IComplexContractConnected>(testContract, testNode, {parameters: {arg0: uintArgument, arg1: bytesArgument}, txObj: {data: complexContractBytecode, from: addresses[0], gas: '90000'}})
     const deployedAddress = deployedInstance.address
