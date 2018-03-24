@@ -15,8 +15,9 @@ contract TestContract {
     function callFunction1(uint256 arg0, bytes32 arg1) pure public returns (uint256 output0, bytes32 output1){
         return (arg0, arg1);
     }
-    function sendFunction0(uint256 arg0) public {
+    function sendFunction0(uint256 arg0) public returns (bool) {
         a = arg0;
+        return true;
     }
     function sendFunction1(int256 arg0, int256 arg1) public returns (bool) {
         c = arg0 + arg1;

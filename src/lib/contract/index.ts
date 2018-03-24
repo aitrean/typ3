@@ -1,11 +1,21 @@
 import { pollFilter } from './../filter/poll';
-import { IFunctionFactory } from './typings';
 import { ITransactionObject } from './../node/typings';
 import { handleInit, handleCall, handleSend } from './function/handlers';
 import { IProxiedNode } from './../node/index';
 import { ConstructorFactory, FunctionFactory } from './function/factories';
 import { objReduce } from './function/components/utils';
-import { IAbiBehaviour, IOutputMappings, Contract, IAbiConstructor, AbiMethodTypes, ConstructorCall, Selector, IAbiFunction, IFuncOutputMappings, IContract, ConstructorArguments } from './typings';
+import { IAbiBehaviour, 
+         IFunctionFactory,
+         IOutputMappings, 
+         Contract, 
+         IAbiConstructor, 
+         AbiMethodTypes, 
+         ConstructorCall, 
+         Selector, 
+         IAbiFunction, 
+         IFuncOutputMappings, 
+         IContract, 
+         ConstructorArguments } from './typings';
 
 export * from './typings'
 
@@ -64,7 +74,7 @@ const ConnectedContract = <T>(
   }
 ) => {
   const routeCalls = {
-    get(contract: IContract, propKey: any) {
+    get(target: IContract, propKey: any) {
       if(propKey === 'address'){
         return address
       }
@@ -102,7 +112,7 @@ const ConnectedContract = <T>(
 
 export const checkForContractAddress = async (node: IProxiedNode, txHash: string, timeout?: number) => {
   const count = timeout ? timeout : 50
-  for(var i = 0; i < count; i++){
+  for(let i = 0; i < count; i++){
     const response = await pollFilter(node);
     if(response){
       const result = await node.eth_getTransactionReceipt(txHash)

@@ -8,33 +8,33 @@ export interface IFilterObject {
 	watch(): void
 }
 
-export const Filter = async (
+export const FilterFactory = async (
 	node: IProxiedNode, 
 	checkFor?: IFilterOptions,
-	callback?: Function
+	callback?: (err: any, result: any) => any
 ) => {
-	return callback ? new filter(node, checkFor).watch(callback) : new filter(node, checkFor)
+	return callback ? new Filter(node, checkFor).watch(callback) : new Filter(node, checkFor)
 }
 
-class filter {
-	checkFor?: IFilterOptions
-	node: IProxiedNode;
-	isWatching: boolean;
-	filterId: string | null
+class Filter {
+	public checkFor?: IFilterOptions
+	public node: IProxiedNode;
+	public isWatching: boolean;
+	public filterId: string | null;
 	constructor(node: IProxiedNode, checkFor?: IFilterOptions) {
 		this.checkFor = checkFor;
 		this.node = node;
-		this.isWatching === false;
+		this.isWatching = false;
 	}
 
-	stopWatching() {
+	public stopWatching() {
 		this.isWatching = false;
 		if(this.filterId){
 			this.node.eth_uninstallFilter(this.filterId)
 		}
 	}
 
-	async get() {
+	public async get() {
 		if(!this.filterId){
 			const response = await this.node.eth_newFilter(this.checkFor ? this.checkFor : {})
 			this.filterId = response
@@ -42,7 +42,7 @@ class filter {
 		return this.node.eth_getFilterLogs(this.filterId);
 	}
 
-	async watch(callback: any) {
+	public async watch(callback: any) {
 		this.isWatching = true;
 		while(this.isWatching){
 			const pollResponse = await pollFilter(this.node, this.filterId)
