@@ -5,11 +5,12 @@ import {
   parseSuppliedArgs
 } from './parsers';
 import { objReduce } from './utils';
-import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs, IAugmentedAbiConstructor, ArgumentsObject } from '../../typings';
+import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs, IAugmentedAbiConstructor, ArgumentsObject } from 'lib/contract/typings';
 
 export const makeArgHandlers = (inputs: IAbiFunction['inputs']): IFuncArgs => {
   const reducer = (accumulator: IFuncArgs, currInput: IAbiFunction) => {
     const { name, type } = currInput;
+
     const processInput = (inputToParse: IAbiFunction) => ({
       value: parsePreEncodedValue(type, inputToParse)
     });
@@ -28,9 +29,7 @@ export const encodeArguments = (
   func: IAugmentedAbiFunction
 ) => {
   const { derived: { inputTypes }, methodSelector } = func;
-
   const args = parseSuppliedArgs(suppliedInputs, func);
-
   const encodedArgs = abi.rawEncode(inputTypes, args).toString('hex');
   return `0x${methodSelector}${encodedArgs}`;
 };
@@ -43,7 +42,7 @@ export const encodeConstructor = (
   if(byteCode){
     const { derived: { inputTypes } } = constructor
     const args = parseSuppliedArgs(suppliedInputs, constructor)
-    const encodedArgs = abi.rawEncode(inputTypes, args)
+    const encodedArgs = abi.rawEncode(inputTypes, args).toString('hex')
     return `0x${byteCode}${encodedArgs}`
   }
   throw Error('could not find bytecode in the transaction object') //TODO move this error scope
@@ -60,7 +59,7 @@ export const decodeArguments = (
   const argBuffer = new Buffer(argString, 'hex');
   // Decode!
   const argArr = abi.rawDecode(inputTypes, argBuffer);
-  
+
   const reducer = (argObj: ArgumentsObject, currArg: any, index: number) => {
     const currName = inputNames[index];
     const currType = inputTypes[index];
@@ -78,22 +77,17 @@ export const decodeReturnValue = (
   func: IAugmentedAbiFunction
 ): IDecode => {
   const { methodSelector, derived: { outputNames, outputTypes } } = func;
-
   const cleanStr = str.replace(`0x${methodSelector}`, '').replace('0x', '');
-
   const retBuffer = new Buffer(cleanStr, 'hex');
-
   const retArr = abi.rawDecode(outputTypes, retBuffer);
-
   const reducer = (argObj: ArgumentsObject, currRet: any, index: number) => {
     const name = outputNames[index];
     const type = outputTypes[index];
-
+    
     return {
       ...argObj,
       [name]: parsePostDecodedValue(type, currRet)
     };
   };
-  //TODO: parse checksummed addresses
   return objReduce(retArr, reducer);
 };

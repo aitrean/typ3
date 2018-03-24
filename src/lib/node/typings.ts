@@ -135,7 +135,7 @@ export interface IProxiedRpcMethods {
   eth_getCode: (address: string) => Promise<string>;
   eth_getTransactionByHash: (hash: string) => Promise<ITransactionObject>;
   eth_sendRawTransaction: (tx: string) => Promise<string>;
-  eth_sendTransaction: (tx: ITransactionObject) => Promise<string>; //TODO check what the nodes are sending back?
+  eth_sendTransaction: (tx: ITransactionObject) => Promise<string>;
   eth_getBlockTransactionCountByHash: (hash: string) => Promise<string>;
   eth_getTransactionReceipt: (hash: string) => Promise<ITransactionReceipt>;
   eth_getCompilers: () => Promise<string[]>;

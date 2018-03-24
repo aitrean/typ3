@@ -2,6 +2,7 @@ import { ITransactionObject, IEstimateGasObj, IBlockNumber, IFilterOptions, IRPC
 import { generateTxObj, JSONPostProcessor, JSONErrorHandler } from './jsonUtils';
 import { IProxiedNode } from '../typings'
 
+//TODO review these param signatures
 const eth_sendRawTransaction = (tx: String) => ({
   method: JsonRpcMethods.eth_sendRawTransaction,
   params: [tx, 'pending']
@@ -67,9 +68,9 @@ const eth_getBlockTransactionCountByNumber = (blocknumber: IBlockNumber) => ({
   params: [blocknumber]
 });
 
-const eth_getCode = (address: string) => ({ //TODO review this signature
+const eth_getCode = (address: string) => ({
   method: JsonRpcMethods.eth_getCode,
-  params: ['latest']
+  params: [address, 'latest']
 });
 
 const eth_getFilterChanges = (filterId: string, parser?: any, error?: any) => ({
@@ -131,7 +132,7 @@ const eth_getTransactionReceipt = (hash: string) => ({
 
 const eth_getUncleByBlockHashAndIndex = (
   hash: string,
-  transactionIdx: string //TODO check this signature
+  transactionIdx: string
 ) => ({
   method: JsonRpcMethods.eth_getUncleByBlockHashAndIndex,
   params: [hash, eth_getTransactionCount]
