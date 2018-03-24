@@ -11,6 +11,7 @@ export enum AbiMethodTypes {
   filter = 'filter'
 }
 
+//TODO add stricter typing. TS wont throw if abi is used in place of Contract argument in ContractInstance factory, which may be a common problem
 export interface IContract {
   [behaviour: string]: any
 }
@@ -34,7 +35,7 @@ export interface IHandleInitParams {
 }
 
 export interface ConstructorArguments<K> {
-  parameters?: string | K | object,
+  parameters?: string | K,
   txObj?: ITransactionObject
 }
 

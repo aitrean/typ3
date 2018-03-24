@@ -25,7 +25,7 @@ export const CreateContract = <T>(
       case(AbiMethodTypes.constructor):
         return {
           ...compiledContract,
-          [ConstructorCall]: handler(currMethod) //TODO change the constructor naming scheme
+          [ConstructorCall]: handler(currMethod)
         }
     }
   }
@@ -37,18 +37,18 @@ export const ContractInstance = async <T, K = {}>(contract: IContract, node: IPr
   const { parameters, txObj } = args
   if(typeof parameters === 'string'){
     const response = await node.eth_getCode(parameters);
-    if(response === '0x'){
-      throw Error('could not find address instantiated at given address')
+    if(response === '0x0'){
+      throw Error('could not find contract at given address')
     }
-    return ConnectedContract<T>(contract, node, parameters)
+    return ConnectedContract(contract, node, parameters) as T
   } else if(txObj && txObj.data) {
-    if(contract['new']){
-      const constructorFunction = contract['new']
+    if(contract[ConstructorCall]){
+      const constructorFunction = contract[ConstructorCall]
       const address = await handleInit({parameters, constructorFunction, node, txObj})
-      return ConnectedContract<T>(contract, node, address)
+      return ConnectedContract(contract, node, address) as T
     } else {
       const address = await handleInit({node, txObj})
-      return ConnectedContract<T>(contract, node, address)
+      return ConnectedContract(contract, node, address) as T
     }
   } else {
     throw Error('could not instantiate a contract from those arguments, either pass a compiled contract through the data of the txObject, or the address of a deployed contract')
@@ -114,7 +114,6 @@ export const checkForContractAddress = async (node: IProxiedNode, txHash: string
   throw Error(`could not find the transaction receipt after ${count} blocks`)
 }
 
-//TODO add support for events
 const selector: Selector = {
   [AbiMethodTypes.function]: (
     abiFunc: IAbiFunction,

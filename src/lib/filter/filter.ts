@@ -1,8 +1,8 @@
-import { IFilterOptions } from './../node/typings';
+import { IFilterOptions, IFilter } from './../node/typings';
 import { IProxiedNode } from '../node';
 import { pollFilter } from './poll'
 
-export interface IFilter {
+export interface IFilterObject {
 	stopWatching(): void,
 	get(): Promise<IFilter>,
 	watch(): void

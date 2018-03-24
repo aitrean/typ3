@@ -6,14 +6,12 @@ export type INewBlockFilterLog = string[];
 export type INewPendingTransactionFilterLog = string[];
 export type ITopic = string | null | (string | null)[];
 export type IFilter = INewBlockFilterLog | INewPendingTransactionFilterLog | IEthNewFilterLogPending[] | IEthNewFilterLog[]
+export type IProxiedNode = IAugmentedNode & IProxiedRpcMethods;
 export type IBlockNumber = string | 'earliest' | 'latest' | 'pending';
 
 export interface INode {
   endpoint: string;
 }
-
-export type IProxiedNode = IAugmentedNode & IProxiedRpcMethods;
-
 export interface IFilterOptions {
   fromBlock?: IBlockNumber;
   toBlock?: IBlockNumber;
@@ -135,7 +133,7 @@ export interface IProxiedRpcMethods {
   eth_getCode: (address: string) => Promise<string>;
   eth_getTransactionByHash: (hash: string) => Promise<ITransactionObject>;
   eth_sendRawTransaction: (tx: string) => Promise<string>;
-  eth_sendTransaction: (tx: ITransactionObject) => Promise<string>; //TODO check what the nodes are sending back?
+  eth_sendTransaction: (tx: ITransactionObject) => Promise<string>;
   eth_getBlockTransactionCountByHash: (hash: string) => Promise<string>;
   eth_getTransactionReceipt: (hash: string) => Promise<ITransactionReceipt>;
   eth_getCompilers: () => Promise<string[]>;
