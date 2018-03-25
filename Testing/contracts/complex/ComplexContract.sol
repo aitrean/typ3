@@ -15,6 +15,12 @@ contract TestContract {
     function callFunction1(uint256 arg0, bytes32 arg1) pure public returns (uint256 output0, bytes32 output1){
         return (arg0, arg1);
     }
+    function callFunctionDynamicBytes() pure public returns (bytes){
+        return "ababa";
+    }
+    function callFunctionDynamicUint() pure public returns (uint){
+        return 9000000000;
+    }
     function sendFunction0(uint256 arg0) public returns (bool) {
         a = arg0;
         return true;

@@ -1,27 +1,31 @@
 import BN from 'bn.js'
 
 export interface IComplexContract{
-overloadedFunction: ABIFuncSend<{arg0: BN | Buffer,arg1: BN | Buffer}> | ABIFuncCall<{arg0: BN | Buffer},{0: BN | Buffer}>
-a: ABIFuncParamlessCall<{0: BN | Buffer}> | ABIFuncParamlessCall<{0: string | Buffer}>
-callFunction1: ABIFuncCall<{arg0: BN | Buffer,arg1: string | Buffer},{output0: BN | Buffer,output1: string | Buffer}>
-sendFunction1: ABIFuncSend<{arg0: BN | Buffer,arg1: BN | Buffer}>
+overloadedFunction: ABIFuncSend<{arg0: BN | Buffer | string,arg1: BN | Buffer | string}> | ABIFuncCall<{arg0: BN | Buffer | string},{0: BN | Buffer | string}>
+a: ABIFuncParamlessCall<{0: BN | Buffer | string}>
+callFunction1: ABIFuncCall<{arg0: BN | Buffer | string,arg1: string | Buffer},{output0: BN | Buffer | string,output1: string | Buffer}>
+sendFunction1: ABIFuncSend<{arg0: BN | Buffer | string,arg1: BN | Buffer | string}>
 b: ABIFuncParamlessCall<{0: string | Buffer}>
-sendFunction0: ABIFuncSend<{arg0: BN | Buffer}>
-callFunction0: ABIFuncCall<{arg0: BN | Buffer},{output0: BN | Buffer}>
-d: ABIFuncParamlessCall<{0: BN | Buffer}>
-c: ABIFuncParamlessCall<{0: BN | Buffer}>
+sendFunction0: ABIFuncSend<{arg0: BN | Buffer | string}>
+callFunction0: ABIFuncCall<{arg0: BN | Buffer | string},{output0: BN | Buffer | string}>
+d: ABIFuncParamlessCall<{0: BN | Buffer | string}>
+c: ABIFuncParamlessCall<{0: BN | Buffer | string}>
+callFunctionDynamicUint: ABIFuncParamlessCall<{0: BN | Buffer | string}>
+callFunctionDynamicBytes: ABIFuncParamlessCall<{0: string | Buffer}>
 }
 export interface IComplexContractConnected {
 address: string
-overloadedFunction: ABIFuncSendConnected<{arg0: BN | Buffer,arg1: BN | Buffer}> | ABIFuncCallConnected<{arg0: BN | Buffer},{0: BN | Buffer}>
-a: ABIFuncParamlessCallConnected<{0: BN | Buffer}>;
-callFunction1: ABIFuncCallConnected<{arg0: BN | Buffer,arg1: string | Buffer},{output0: BN | Buffer,output1: string | Buffer}>;
-sendFunction1: ABIFuncSendConnected<{arg0: BN | Buffer,arg1: BN | Buffer}>;
+overloadedFunction: ABIFuncSendConnected<{arg0: BN | Buffer | string,arg1: BN | Buffer | string}> | ABIFuncCallConnected<{arg0: BN | Buffer | string},{0: BN | Buffer | string}>
+a: ABIFuncParamlessCallConnected<{0: BN | Buffer | string}>;
+callFunction1: ABIFuncCallConnected<{arg0: BN | Buffer | string,arg1: string | Buffer},{output0: BN | Buffer | string,output1: string | Buffer}>;
+sendFunction1: ABIFuncSendConnected<{arg0: BN | Buffer | string,arg1: BN | Buffer | string}>;
 b: ABIFuncParamlessCallConnected<{0: string | Buffer}>;
-sendFunction0: ABIFuncSendConnected<{arg0: BN | Buffer}>;
-callFunction0: ABIFuncCallConnected<{arg0: BN | Buffer},{output0: BN | Buffer}>;
-d: ABIFuncParamlessCallConnected<{0: BN | Buffer}>;
-c: ABIFuncParamlessCallConnected<{0: BN | Buffer}>;
+sendFunction0: ABIFuncSendConnected<{arg0: BN | Buffer | string}>;
+callFunction0: ABIFuncCallConnected<{arg0: BN | Buffer | string},{output0: BN | Buffer | string}>;
+d: ABIFuncParamlessCallConnected<{0: BN | Buffer | string}>;
+c: ABIFuncParamlessCallConnected<{0: BN | Buffer | string}>;
+callFunctionDynamicUint: ABIFuncParamlessCallConnected<{0: BN | Buffer | string}>;
+callFunctionDynamicBytes: ABIFuncParamlessCallConnected<{0: string | Buffer}>;
 }
 export type IComplexContractConstructor = ABIFuncParamlessSendConnected
 
@@ -34,6 +38,8 @@ address: string
 succeeded: ABIFuncParamlessCallConnected<{0: boolean}>;
 }
 export type ISimpleContractConstructor = ABIFuncParamlessSendConnected
+
+
 
 interface ABIFuncParamlessCall<T = void> {
   encodeArguments(): string;

@@ -43,6 +43,14 @@ describe('contract instantiation', async () => {
     expect(await testInstance.callFunction1({arg0: uintArgument, arg1: bytesArgument})).toEqual({output0: uintArgument.toString(), output1: bytesArgument})
   })
 
+  it('should deploy a contract and then call some functions with dynamic return types', async () => {
+    const testAbi = require('../../Contracts/complex/complexContract.json');
+    const testContract = CreateContract<IComplexContract>(testAbi)
+    const testInstance = await ContractInstance<IComplexContractConnected>(testContract, testNode, {parameters: {arg0: uintArgument, arg1: bytesArgument}, txObj: {data: complexContractBytecode, from: addresses[0], gas: '90000'}}) //TODO if gas is not explicitly specified, constructor will throw, fix this.
+    expect((await testInstance.callFunctionDynamicBytes())[0].toString()).toEqual('ababa')
+    expect((await testInstance.callFunctionDynamicUint())[0]).toEqual('9000000000')
+  })
+
   it('should deploy a contract and then place some transactions', async () => {
     const testAbi = require('../../Contracts/complex/complexContract.json');
     const testContract = CreateContract<IComplexContract>(testAbi)
