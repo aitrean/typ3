@@ -3,7 +3,8 @@ import { generateTxObj, JSONPostProcessor, JSONErrorHandler } from './jsonUtils'
 import { IProxiedNode } from '../typings'
 
 //TODO review these param signatures
-const eth_sendRawTransaction = (tx: String) => ({
+/* tslint:disable */
+const eth_sendRawTransaction = (tx: string) => ({
   method: JsonRpcMethods.eth_sendRawTransaction,
   params: [tx, 'pending']
 });
@@ -278,6 +279,7 @@ const shh_getMessages = (filterId: string) => ({
   method: shh_getMessages,
   params: [filterId]
 });
+/* tslint:enable */
 
 const rpcMethods: any = {
   eth_call,

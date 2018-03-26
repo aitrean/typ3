@@ -1,7 +1,7 @@
 import { ITransactionObject } from '../typings';
 import { randomBytes } from 'crypto';
 
-export const generateId = (): String => randomBytes(16).toString('hex');
+export const generateId = (): string => randomBytes(16).toString('hex');
 
 export const generateTxObj = (tx: ITransactionObject) => ({
   id: generateId(),

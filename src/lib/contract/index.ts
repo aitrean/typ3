@@ -43,7 +43,7 @@ export const CreateContract = <T>(
   return contract as T;
 };
 
-export const ContractInstance = async <T, K = {}>(contract: IContract, node: IProxiedNode, args: ConstructorArguments<K>) => {
+export const ContractInstance = async <T, K = {}>(contract: IContract, node: IProxiedNode, args: ConstructorArguments<K>) => { //TODO change constructorArguments to instantiationArguments
   const { parameters, txObj } = args
   if(typeof parameters === 'string'){
     const response = await node.eth_getCode(parameters);
