@@ -45,7 +45,7 @@ const bytecode = await myNode.getCode('0xa94f5374fce5edbc8e2a8697c15331677e6ebf0
 This is a factory function that will instantiate a raw contract proxy based on an abi. The raw contract proxy will map function and event names to function and event call objects. These objects have encoding and decoding methods that will return encoded/decoded blockchain data based on the abi specs. Raw contract proxies are passed as an argument to a ContractInstance factory. 
 
 #### Parameters and Typings
-<T>: The interface for the raw contract. This is generated from the typ3-cli, and used to bind typings onto the proxy.
+\<T> : The interface for the raw contract. This is generated from the typ3-cli, and used to bind typings onto the proxy.
 
 abi: The abi JSON object, parsed from an abi file.
 
@@ -66,10 +66,10 @@ const decoded = testContract['foo'].decode(encoded)
 Using a proxied node, and a raw contract, the ContractInstance will generate a ConnectedContract object, which lets you interact with a contract deployed on the blockchain by invoking functions on the ConnectedContract. You can create a ConnectedContract by passing an argument to the address of an already-deployed contract, or by passing the parameters and bytecode into the arguments to deploy a new contract. 
 
 #### Parameters and Typings
-<T>: Interface
+\<T> : Interface
 The interface for the Connected Contract. This is generated from the typ3-cli, and used to bind typings onto the proxy.
 
-<K>: Interface (optional)
+\<K> : Interface (optional)
 In order to bind typings to the constructor call, you can specify a second, optional typing argument that is generated from the typ3-cli.
 
 node: ProxiedNode

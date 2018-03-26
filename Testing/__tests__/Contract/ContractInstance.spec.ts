@@ -65,6 +65,8 @@ describe('contract instantiation', async () => {
     expect((await testInstance.a())[0]).toEqual(uintArgument.toString())
     expect((await testInstance.b())[0]).toEqual(bytesArgument)
   })
+
+  //To be supported with overloaded functions PR
   /*
   it('should deploy a contract and invoke two different methods with the same name', async () => {
     const testAbi = require('../../Contracts/complex/complexContract.json');
