@@ -1,104 +1,147 @@
-# THIS IS ALPHA SOFTWARE.
+# Typ3 (Beta)
 
-# typ3 -- A typescript, promise-only alternative to web3
+Typ3 provides a toolset that lets you instantiate fully-typed, promise-based contracts, nodes, and filters. Typ3 also exposes several typed RPC functions, and interfaces for working with JSON RPC calls.
 
-ABI Type Generator Package -- https://github.com/Mike-Stupich/typ3-cli
- 
-- Uses typed-objects in parameters instead of arrays to call contracts for position-agnostic calls 
-- Uses typed-objects in outputs, eliminating the need to guess what values they are 
-- Automatically chooses between a transaction and call on invocation via proxies
-- Currently only supports ABI functions 
-- Fully typed contracts and rpc-calls
+## Getting Started
+### Prerequisites
 
-This library allows you to dynamically construct a fully-typed (more on this below) object representation of the ABI, including methods for encoding, decoding, and calling the contract.
+These packages are meant to be used in a Typescript, ES6 environment. Tests use testrpc to simulate blockchain deployments.
 
-It provides a lightweight alternative to web3’s contract interaction functionalities, with full type support and better error reporting.
+### Installing
 
-We accomplish better reporting by using objects instead of arrays for the contract arguments and return values. This allows us to specify value typings for each argument, and provide more specific error based on the specific invalid input.
-
-In addition, the library makes heavy use of ES6 proxies to intercept on method invocations on contract methods and node RPC methods. For contracts, this provides the ability to re-route method invocations depending on if a method is constant / payable or not. For RPC methods, they're used to keep both the RPC requests and the node library itself separate, with the proxy acting as a bridge between the two.
-
-RPC methods themselves are designed to be highly configurable, with the ability to have pre/post processing functions and custom error handlers of the call. (Ex. Convert any BigNumber input to a string before the actual RPC call is sent, map the returned data to the node in any way you'd like, handle any RPC errors in a custom handler)
-
-##  Node(endpoint) 
-
-Returns an instance that provides a connection to a node with rpc methods as described in https://github.com/ethereum/wiki/wiki/JSON-RPC. 
-Also has a .setEndpoint function for connecting to a different node
-
-## <ABI_TYPE>CreateContract(json_abi [, outputMappings])
- - json_abi The json abi of the smart contract to interact with
- - [optional] outputMappings An object of arrays that hold mappings for un-named output parameters, it should match the same outputMappings file used for generating ABI_TYPE from `typ3-cli`
-
-Returns a contract instance of ABI_TYPE that has methods with the same mapping as the smart contract. ABI_TYPE is generated from the `typ3-cli` package to provide typing support for the contract instance. Each method provides encoding and decoding functions for input and output of the smart contract. 
-
-## <ABI_TYPE_CONNECTED>ConnectedContract(contract_instance, node_instance [, txObj])
- - contract_instance The contract instance to connect to the specified node 
- - node_instance The node to send calls to 
- - [optional] txObj Allows for default parameters such as `to, from, value, gas`. 
-Returns a contract instance that is connected to an existing node. Each method is directly invokable. 
-
-### Contract Instance
-- myContract.myMethod 
-    - encodeArguments(paramsObj)
-    - decodeArguments(encodedData)
-    - decodeReturnValue(encodedData)
-
-### Connected Contract Instance
-- myContract.myMethod(paramsObj, txObj)
-
-### How the paramsObj is specified
-
-```js 
-  {
-    "constant": true,
-    "inputs": [
-      { "name": "_a", "type": "uint256" },
-      { "name": "_c", "type": "uint256" }
-    ],
-    "name": "ppb",
-    "outputs": [{ "name": "b", "type": "uint256" }],
-    "type": "function"
-  },
 ```
-Given the above abi function, paramsObj would be: 
+npm install typ3
 
-```js
-{   
-    _a: string | BigNumber | BN,  
-    _c: string | BigNumber | BN
-}
+npm install @types/typ3
+
 ```
-And the returned value as the following shape 
 
-```js
+And we have our components!
+
+```
+import {ProxiedNode, CreateContract, ContractInstance, Filter} from 'typ3'
+
+```
+
+## Using the Libraries
+
+### ProxiedNode
+This is a factory function that will instantiate a node proxy object that represents a node as described by the [JSON RPC spec](https://github.com/ethereum/wiki/wiki/JSON-RPC). Calls that require information on block ranges will default to 'latest' unless otherwise specified.
+
+#### Parameters:
+Endpoint: The HTTP endpoint of the node.
+
+```
+import { ProxiedNode } from 'typ3'
+
+const myNode = ProxiedNode('http://localhost:8545')
+
+//bytecode = 0x6060604052341561000f57... rest of the deployed bytecode
+const bytecode = await myNode.getCode('0xa94f5374fce5edbc8e2a8697c15331677e6ebf0b')
+
+```
+
+### CreateContract
+This is a factory function that will instantiate a raw contract proxy based on an abi. The raw contract proxy will map function and event names to function and event call objects. These objects have encoding and decoding methods that will return encoded/decoded blockchain data based on the abi specs. Raw contract proxies are passed as an argument to a ContractInstance factory. 
+
+#### Parameters and Typings
+<T>: The interface for the raw contract. This is generated from the typ3-cli, and used to bind typings onto the proxy.
+
+abi: The abi JSON object, parsed from an abi file.
+
+```
+import { IAbiInterface } from './abiTypes'
+const myAbi = require('./abiFile.json');
+const testContract = CreateContract<IAbiInterface>(testAbi)
+
+//testContract['foo'] corresponds to abi definition for signature foo(uint32, bool)
+//encoded = '0x7615fabb000000000000000000000000000000000000000000000000000000000000000450000000000000000000000000000000000000000000000000000000000000001
+const encoded = testContract['foo'].encode(69, true);
+
+//decoded = {0: 69, 1: true}
+const decoded = testContract['foo'].decode(encoded)
+```
+
+### ContractInstance
+Using a proxied node, and a raw contract, the ContractInstance will generate a ConnectedContract object, which lets you interact with a contract deployed on the blockchain by invoking functions on the ConnectedContract. You can create a ConnectedContract by passing an argument to the address of an already-deployed contract, or by passing the parameters and bytecode into the arguments to deploy a new contract. 
+
+#### Parameters and Typings
+<T>: Interface
+The interface for the Connected Contract. This is generated from the typ3-cli, and used to bind typings onto the proxy.
+
+<K>: Interface (optional)
+In order to bind typings to the constructor call, you can specify a second, optional typing argument that is generated from the typ3-cli.
+
+node: ProxiedNode
+The proxiednode object we want to send RPC requests to.
+
+contract: IContract
+The raw contract object generated by CreateContract() factory.
+
+args: ConstructorArguments
 {
-    b: string
+    params: {} | string
+    If params is an address string, then the ContractInstance factory will check for bytecode deployed at that address, and link the ConnectedContract to that address if any is found.
+
+    txObj: {} (optional)
+    If you want to deploy a new contract on instantiation, then specify the sender address and bytecode in the txObj field, along with additional transaction object arguments.
+}
+
+So, for this contract..
+
+```
+pragma solidity ^0.4.0;
+contract MyContract {
+    bytes32 public text;
+    function MyContract(bytes32 arg) public {
+        text = arg;
+    }
+    function foo(int256 arg) pure returns (int256 output) {
+        return arg + 1;
+    }
+    function bar(bytes32 arg) returns (bool finished) {
+        text = arg;
+        return true;
+    }
 }
 ```
 
-If outputs was the following instead: `"outputs": [{ "name": "", "type": "uint256" }],`
+You can invoke..
 
-We would have this: 
-```js
-{
-    0: string
-}
+```
+import { IMyContract, IMyContractConnected , IMyContractConstructor} from './abiTypes'
+const myNode = ProxiedNode('http://localhost:8545')
+const myAbi = require('./abiFile.json');
+const myBytecode = require('./bytecode') //bytecode for the contract we want to deploy
+const myContract = CreateContract<IAbiInterface>(testAbi)
+const myInstance = ConnectedContract<IAbiInterfaceConnected, IAbiInterfaceConstructor>(myNode, myContract, {params: {arg: 'apple'}, txObj: {bytecode: myBytecode, from: '0x630b82ea92fb2fcbdacd10b5eb3a13905f82bec5'}})
+
+//result0 = {0: 'apple'}
+const result0 = await myInstance.text();
+
+//result1 = {output: '1000001'}
+const result1 = myInstance.foo('1000000')
+
+//result2 = {finished: true};
+const result2 = await myInstance.bar('grape')
+
+//result3 = {0: 'grape'}
+const result3 = await myInstance.text()
 ```
 
-Unless a user supplied outputMapping was provided, then it would be:
+## Running the tests
 
-```js
-const outputMappings = {
-    ppb: ["myName"]
-}
+Tests are run with testrpc listening on its default port (localhost:8545). 
 
-{
-    "myName": string
-}
+```
+npm run test
 ```
 
-Contributors
-- Henry Nguyen
-- Mike Stupich
-- Nicholas Lewanowicz
-- Jaimin Darji
+## Built With
+
+* [ethereumjs libs](https://github.com/ethereumjs) - Ethereum utility libraries for js
+* [node fetch](https://www.npmjs.com/package/node-fetch) - For composing HTTP requests
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
