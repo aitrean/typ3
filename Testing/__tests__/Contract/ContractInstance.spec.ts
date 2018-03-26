@@ -2,7 +2,7 @@ import BN from 'bn.js';
 import { ISimpleContract, ISimpleContractConnected, IComplexContract, IComplexContractConnected } from '../../contracts/abiTypes';
 import { ProxiedNode, CreateContract, ContractInstance } from '../../../src/lib';
 import { simpleContractBytecode, complexContractBytecode } from '../../contracts'
-import { startServer, stopServer, TEST_ETH_ADDRESS, TEST_SERVER_ENDPOINT } from '../../helpers';
+import { startServer, stopServer, TEST_ETH_ADDRESS_A, TEST_SERVER_ENDPOINT } from '../../helpers';
 
 const simpleContractAbi = require('../../contracts/simple/SimpleContract.json');
 const complexContractAbi = require('../../contracts/complex/ComplexContract.json')
@@ -61,7 +61,7 @@ describe('contract instantiation', async () => {
     const testAbi = complexContractAbi;
     const testContract = CreateContract<IComplexContract>(testAbi)
     const testInstance = await ContractInstance<IComplexContractConnected>(testContract, testNode, {parameters: {arg0: uintArgument, arg1: bytesArgument}, txObj: {data: complexContractBytecode, from: addresses[0], gas: '90000'}})
-    await testInstance.sendFunction0({arg0: uintArgument}, {from: TEST_ETH_ADDRESS, gas: '90000'})
+    await testInstance.sendFunction0({arg0: uintArgument}, {from: TEST_ETH_ADDRESS_A, gas: '90000'})
     expect((await testInstance.a())[0]).toEqual(uintArgument.toString())
     expect((await testInstance.b())[0]).toEqual(bytesArgument)
   })
