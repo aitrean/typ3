@@ -2,8 +2,14 @@ import BN from 'bn.js';
 import { ISimpleContract, ISimpleContractConnected, IComplexContract, IComplexContractConnected } from '../../contracts/abiTypes';
 import { ProxiedNode, CreateContract, ContractInstance } from '../../../src/lib';
 import { simpleContractBytecode, complexContractBytecode } from '../../contracts'
+import { startServer, stopServer, TEST_ETH_ADDRESS, TEST_SERVER_ENDPOINT } from '../../helpers';
 
-const testNode = ProxiedNode('http://localhost:8545')
+const simpleContractAbi = require('../../contracts/simple/SimpleContract.json');
+const complexContractAbi = require('../../contracts/complex/ComplexContract.json')
+const testNode = ProxiedNode(TEST_SERVER_ENDPOINT)
+
+beforeAll(() => startServer());
+afterAll(() => stopServer());
 
 describe('contract instantiation', async () => {
   const bytesArgument = Buffer.alloc(32, 'testing')
@@ -17,7 +23,7 @@ describe('contract instantiation', async () => {
   })
 
   it('should deploy a blank contract', async () => {
-    const testAbi = require('../../contracts/simple/SimpleContract.json');
+    const testAbi = simpleContractAbi;
     const testContract = CreateContract<ISimpleContract>(testAbi)
     const testInstance = await ContractInstance<ISimpleContractConnected>(testContract, testNode, {txObj: {data: simpleContractBytecode, from: addresses[0], gas: '90000'}})
     const succeeded = (await testInstance.succeeded())[0]
@@ -26,7 +32,7 @@ describe('contract instantiation', async () => {
   })
 
   it('should deploy a contract with arguments, then instantiate from the deployment', async () => {
-    const testAbi = require('../../contracts/complex/ComplexContract.json');
+    const testAbi = complexContractAbi;
     const testContract = CreateContract<IComplexContract>(testAbi)
     const deployedInstance = await ContractInstance<IComplexContractConnected>(testContract, testNode, {parameters: {arg0: uintArgument, arg1: bytesArgument}, txObj: {data: complexContractBytecode, from: addresses[0], gas: '90000'}})
     const deployedAddress = deployedInstance.address
@@ -36,7 +42,7 @@ describe('contract instantiation', async () => {
   });
 
   it('should deploy a contract and then call some functions', async () => {
-    const testAbi = require('../../Contracts/complex/complexContract.json');
+    const testAbi = complexContractAbi;
     const testContract = CreateContract<IComplexContract>(testAbi)
     const testInstance = await ContractInstance<IComplexContractConnected>(testContract, testNode, {parameters: {arg0: uintArgument, arg1: bytesArgument}, txObj: {data: complexContractBytecode, from: addresses[0], gas: '90000'}}) //TODO if gas is not explicitly specified, constructor will throw, fix this.
     expect((await testInstance.callFunction0({arg0: uintArgument})).output0).toEqual(uintArgument.toString())
@@ -44,7 +50,7 @@ describe('contract instantiation', async () => {
   })
 
   it('should deploy a contract and then call some functions with dynamic return types', async () => {
-    const testAbi = require('../../Contracts/complex/complexContract.json');
+    const testAbi = complexContractAbi;
     const testContract = CreateContract<IComplexContract>(testAbi)
     const testInstance = await ContractInstance<IComplexContractConnected>(testContract, testNode, {parameters: {arg0: uintArgument, arg1: bytesArgument}, txObj: {data: complexContractBytecode, from: addresses[0], gas: '90000'}}) //TODO if gas is not explicitly specified, constructor will throw, fix this.
     expect((await testInstance.callFunctionDynamicBytes())[0].toString()).toEqual('ababa')
@@ -52,10 +58,10 @@ describe('contract instantiation', async () => {
   })
 
   it('should deploy a contract and then place some transactions', async () => {
-    const testAbi = require('../../Contracts/complex/complexContract.json');
+    const testAbi = complexContractAbi;
     const testContract = CreateContract<IComplexContract>(testAbi)
     const testInstance = await ContractInstance<IComplexContractConnected>(testContract, testNode, {parameters: {arg0: uintArgument, arg1: bytesArgument}, txObj: {data: complexContractBytecode, from: addresses[0], gas: '90000'}})
-    await testInstance.sendFunction0({arg0: uintArgument}, {from: '0x06e854758939a6125febce9efcdbe80031dd059d', gas: '90000'})
+    await testInstance.sendFunction0({arg0: uintArgument}, {from: TEST_ETH_ADDRESS, gas: '90000'})
     expect((await testInstance.a())[0]).toEqual(uintArgument.toString())
     expect((await testInstance.b())[0]).toEqual(bytesArgument)
   })
