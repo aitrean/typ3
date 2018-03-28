@@ -8,14 +8,17 @@ const simpleContractAbi = require('../../contracts/simple/SimpleContract.json');
 const complexContractAbi = require('../../contracts/complex/ComplexContract.json')
 const testNode = ProxiedNode(TEST_SERVER_ENDPOINT)
 
-beforeAll(() => startServer());
+//TODO clear 8545 after throw events
+
+beforeAll(() => {
+  startServer();
+  jest.disableAutomock();
+})
 afterAll(() => stopServer());
 
 describe('contract instantiation', async () => {
   const bytesArgument = Buffer.alloc(32, 'testing')
   const uintArgument = new BN('100000000');
-  const intArgument0 = new BN('-100000000');
-  const intArgument1 = new BN('150000000')
   let addresses: any = []
 
   beforeEach( async () => {
