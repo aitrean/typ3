@@ -27,12 +27,12 @@ export const CreateContract = <T>(
     const { name, type } = currMethod
     const handler = selector[type];
     switch(type){
-      case(AbiMethodTypes.function):
+      case AbiMethodTypes.function:
         return {
           ...compiledContract,
           [name]: handler(currMethod, outputMappings[name])
         }
-      case(AbiMethodTypes.constructor):
+      case AbiMethodTypes.constructor:
         return {
           ...compiledContract,
           [ConstructorCall]: handler(currMethod)

@@ -89,7 +89,7 @@ args: ConstructorArguments
 
 So, for this contract..
 
-```
+```.sol
 pragma solidity ^0.4.0;
 contract MyContract {
     bytes32 public text;
@@ -108,7 +108,7 @@ contract MyContract {
 
 You can invoke..
 
-```
+```.ts
 import { IMyContract, IMyContractConnected , IMyContractConstructor} from './abiTypes'
 const myNode = ProxiedNode('http://localhost:8545')
 const myAbi = require('./abiFile.json');
