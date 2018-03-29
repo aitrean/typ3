@@ -4,29 +4,39 @@ import { IProxiedNode } from '../typings'
 
 //TODO review these param signatures
 /* tslint:disable */
-const eth_sendRawTransaction = (tx: string) => ({
+const eth_sendRawTransaction = (tx: string, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_sendRawTransaction,
-  params: [tx, 'pending']
+  params: [tx],
+  parser,
+  error
 });
 
-const eth_call = (call: ITransactionObject) => ({
+const eth_call = (call: ITransactionObject, blockNum?: string, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_call,
-  params: [call, 'pending']
+  params: [call, blockNum],
+  parser,
+  error
 });
 
-const eth_sendTransaction = (tx: ITransactionObject) => ({
+const eth_sendTransaction = (tx: ITransactionObject, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_sendTransaction,
-  params: [tx]
+  params: [tx],
+  parser, 
+  error
 });
 
-const eth_accounts = () => ({
+const eth_accounts = (parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_accounts,
-  params: []
+  params: [],
+  parser, 
+  error
 });
 
-const eth_blockNumber = () => ({
+const eth_blockNumber = (parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_blockNumber,
-  params: []
+  params: [],
+  parser,
+  error
 });
 
 const eth_coinbase = () => ({
@@ -34,137 +44,179 @@ const eth_coinbase = () => ({
   params: []
 });
 
-const eth_estimateGas = (tx: IEstimateGasObj) => ({
+const eth_estimateGas = (tx: IEstimateGasObj,   parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_estimateGas,
-  params: [tx, 'pending']
+  params: [tx, 'pending'],
+  parser,
+  error
 });
 
-const eth_gasPrice = () => ({ method: eth_gasPrice });
+const eth_gasPrice = (parser?: (value: any) => any, error?: (value: any) => any) => ({ 
+  method: eth_gasPrice,
+  parser,
+  error
+ });
 
-const eth_getBalance = (address: string) => ({
+const eth_getBalance = (address: string, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_getBalance,
-  params: [address, 'pending']
+  params: [address, 'latest'],
+  parser,
+  error
 });
 
-const eth_getBlockByHash = (hash: string, fullTxObj: boolean) => ({
+const eth_getBlockByHash = (hash: string, fullTxObj: boolean, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_getBlockByHash,
-  params: [hash, fullTxObj]
+  params: [hash, fullTxObj],
+  parser,
+  error
 });
 
 const eth_getBlockByNumber = (
   blocknumber: IBlockNumber,
-  fullTxObj: boolean
+  fullTxObj: boolean,
+  parser?: (value: any) => any, 
+  error?: (value: any) => any
 ) => ({
   method: JsonRpcMethods.eth_getBlockByNumber,
-  params: [blocknumber, fullTxObj]
+  params: [blocknumber, fullTxObj],
+  parser,
+  error
 });
 
-const eth_getBlockTransactionCountByHash = (hash: string) => ({
+const eth_getBlockTransactionCountByHash = (hash: string, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_getBlockTransactionCountByHash,
-  params: [hash]
+  params: [hash],
+  parser,
+  error
 });
 
-const eth_getBlockTransactionCountByNumber = (blocknumber: IBlockNumber) => ({
+const eth_getBlockTransactionCountByNumber = (blocknumber: IBlockNumber, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_getBlockTransactionCountByNumber,
-  params: [blocknumber]
+  params: [blocknumber],
+  parser,
+  error
 });
 
-const eth_getCode = (address: string) => ({
+const eth_getCode = (address: string, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_getCode,
-  params: [address, 'latest']
+  params: [address, 'latest'],
+  parser: parser,
+  error: error
 });
 
-const eth_getFilterChanges = (filterId: string, parser?: any, error?: any) => ({
+const eth_getFilterChanges = (filterId: string, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_getFilterChanges,
   params: [filterId],
   parser: parser,
   error: error
 });
 
-const eth_getFilterLogs = (filterId: string) => ({
+const eth_getFilterLogs = (filterId: string, parser?: (value: any) => any, error?: (value: any) => any) => ({
   method: JsonRpcMethods.eth_getFilterLogs,
-  params: [filterId]
+  params: [filterId],
+  parser: parser,
+  error: error
 });
 
-const eth_getLogs = (filterObj: IFilterOptions) => ({
+const eth_getLogs = (filterObj: IFilterOptions, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_getLogs,
-  params: [filterObj]
+  params: [filterObj],
+  parser: parser,
+  error: error
 });
 
 const eth_getStorageAt = (
   address: string,
   positionInStorage: string,
-  blockNumber: IBlockNumber
+  blockNumber: IBlockNumber,
+  parser?: (value: any) => any, 
+  error?: (value:any) => any
 ) => ({
   method: JsonRpcMethods.eth_getStorageAt,
-  params: [address, positionInStorage, blockNumber]
+  params: [address, positionInStorage, blockNumber],
+  parser,
+  error
 });
 
 const eth_getTransactionByBlockHashAndIndex = (
   hash: string,
-  transactionIdx: string
+  transactionIdx: string,
+  parser?: (value: any) => any, 
+  error?: (value: any) => any
 ) => ({
   method: JsonRpcMethods.eth_getTransactionByBlockHashAndIndex,
-  params: [hash, transactionIdx]
+  params: [hash, transactionIdx],
+  parser,
+  error
 });
 
 const eth_getTransactionByBlockNumberAndIndex = (
   blockNum: IBlockNumber,
-  transactionIdx: string
+  transactionIdx: string,
+  parser?: (value: any) => any, 
+  error?: (value:any) => any
 ) => ({
   method: JsonRpcMethods.eth_getTransactionByBlockNumberAndIndex,
   params: [blockNum, transactionIdx]
 });
 
-const eth_getTransactionByHash = (hash: string) => ({
+const eth_getTransactionByHash = (hash: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_getTransactionByHash,
-  params: [hash]
+  params: [hash],
+  parser,
+  error
 });
 
-const eth_getTransactionCount = (address: string, blockNum?: IBlockNumber) => ({
+const eth_getTransactionCount = (address: string, blockNum?: IBlockNumber, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_getTransactionCount,
-  params: [address, blockNum]
+  params: [address, blockNum],
+  parser,
+  error
 });
 
-const eth_getTransactionReceipt = (hash: string) => ({
+const eth_getTransactionReceipt = (hash: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_getTransactionReceipt,
-  params: [hash]
+  params: [hash],
+  parser,
+  error
 });
 
 const eth_getUncleByBlockHashAndIndex = (
   hash: string,
-  transactionIdx: string
+  transactionIdx: string,
+  parser?: (value: any) => any, 
+  error?: (value:any) => any
 ) => ({
   method: JsonRpcMethods.eth_getUncleByBlockHashAndIndex,
-  params: [hash, eth_getTransactionCount]
+  params: [hash, eth_getTransactionCount],
+  parser,
+  error
 });
 
 const eth_getUncleByBlockNumberAndIndex = (
   transactionIdx: string,
-  blockNum?: IBlockNumber
+  blockNum?: IBlockNumber,
+  parser?: (value: any) => any, 
+  error?: (value:any) => any
 ) => ({
   method: JsonRpcMethods.eth_getUncleByBlockNumberAndIndex,
-  params: [blockNum, transactionIdx]
+  params: [blockNum, transactionIdx],
+  parser,
+  error
 });
 
-const eth_getCompilers = () => ({
+const eth_getCompilers = (parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_getCompilers,
-  params: []
+  params: [],
+  parser,
+  error
 });
 
-const eth_compileSolidity = (source: string) => ({
+const eth_compileSolidity = (source: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_compileSolidity,
-  params: [source]
-});
-
-const eth_compileLLL = (source: string) => ({
-  method: JsonRpcMethods.eth_compileLLL,
-  params: [source]
-});
-
-const eth_compileSerpent = (source: string) => ({
-  method: JsonRpcMethods.eth_compileSerpent,
-  params: [source]
+  params: [source],
+  parser,
+  error
 });
 
 const eth_newFilter = (filterObj: IFilterOptions, parser?: any, error?: any) => ({
@@ -174,110 +226,80 @@ const eth_newFilter = (filterObj: IFilterOptions, parser?: any, error?: any) => 
   error: error
 });
 
-const eth_newBlockFilter = () => ({
+const eth_newBlockFilter = (parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_newBlockFilter,
-  params: []
+  params: [],
+  parser,
+  error
 });
 
-const eth_newPendingTransactionFilter = () => ({
+const eth_newPendingTransactionFilter = (parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_newPendingTransactionFilter,
-  params: []
+  params: [],
+  parser,
+  error
 });
 
-const eth_uninstallFilter = (filterId: string) => ({
+const eth_uninstallFilter = (filterId: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_uninstallFilter,
-  params: [filterId]
+  params: [filterId],
+  parser,
+  error
 });
 
-const eth_getWork = () => ({
+const eth_getWork = (parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_getWork,
-  params: []
+  params: [], 
+  parser,
+  error
 });
 
 const eth_submitWork = (
   hashNonceFound: string,
   hashHeadersPow: string,
-  hashMixDigest: string
+  hashMixDigest: string,
+  parser?: (value: any) => any, 
+  error?: (value:any) => any
 ) => ({
   method: JsonRpcMethods.eth_submitWork,
-  params: [hashNonceFound, hashHeadersPow, hashMixDigest]
+  params: [hashNonceFound, hashHeadersPow, hashMixDigest],
+  parser,
+  error
 });
 
-const eth_submitHashrate = (hashRate: string, id: string) => ({
+const eth_submitHashrate = (hashRate: string, id: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.eth_submitHashrate,
-  params: [hashRate, id]
+  params: [hashRate, id], 
+  parser, 
+  error
 });
 
-const db_putString = (dbName: string, keyName: string, store: string) => ({
+const db_putString = (dbName: string, keyName: string, store: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.db_putString,
-  params: [dbName, keyName, store]
+  params: [dbName, keyName, store],
+  parser, 
+  error
 });
 
-const db_getString = (dbName: string, keyName: string) => ({
+const db_getString = (dbName: string, keyName: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.db_getString,
-  params: [dbName, keyName]
+  params: [dbName, keyName],
+  parser,
+  error
 });
 
-const db_putHex = (dbName: string, keyName: string, storeData: string) => ({
+const db_putHex = (dbName: string, keyName: string, storeData: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.db_putHex,
-  params: [dbName, keyName, storeData]
+  params: [dbName, keyName, storeData],
+  parser,
+  error
 });
 
-const db_getHex = (dbName: string, keyName: string) => ({
+const db_getHex = (dbName: string, keyName: string, parser?: (value: any) => any, error?: (value:any) => any) => ({
   method: JsonRpcMethods.db_getHex,
-  params: [dbName, keyName]
-});
-
-const shh_version = () => ({
-  method: JsonRpcMethods.shh_version,
-  params: []
-});
-
-//Not sure: need new Object
-// const shh_post = (whipserObj: string) => ({
-//   method: shh_post,
-//   params: [whipserObj]
-// });
-
-const shh_newIdentity = () => ({
-  method: shh_newIdentity,
-  params: []
-});
-
-const shh_hasIdentity = (address: string) => ({
-  method: shh_hasIdentity,
-  params: [address]
-});
-
-const shh_newGroup = () => ({
-  method: shh_newGroup,
-  params: []
-});
-
-const shh_addToGroup = (address: string) => ({
-  method: shh_addToGroup,
-  params: [address]
-});
-
-//Not sure need to define new filter options
-//const shh_newFilter = (filterObj: IFilterOptions) => ({
-//  method: shh_newFilter,
-//  params: [filterObj]
-//});
-
-const shh_uninstallFilter = (filterId: string) => ({
-  method: shh_uninstallFilter,
-  params: [filterId]
-});
-
-const shh_getFilterChanges = (filterId: string) => ({
-  method: shh_getFilterChanges,
-  params: [filterId]
-});
-
-const shh_getMessages = (filterId: string) => ({
-  method: shh_getMessages,
-  params: [filterId]
+  params: [dbName, keyName],
+  parser,
+  error
 });
 /* tslint:enable */
 
@@ -309,8 +331,6 @@ const rpcMethods: any = {
   eth_getUncleByBlockNumberAndIndex,
   eth_getCompilers,
   eth_compileSolidity,
-  eth_compileLLL,
-  eth_compileSerpent,
   eth_newFilter,
   eth_newBlockFilter,
   eth_newPendingTransactionFilter,
@@ -322,14 +342,6 @@ const rpcMethods: any = {
   db_getString,
   db_putHex,
   db_getHex,
-  shh_version,
-  shh_newIdentity,
-  shh_hasIdentity,
-  shh_newGroup,
-  shh_addToGroup,
-  shh_uninstallFilter,
-  shh_getFilterChanges,
-  shh_getMessages
 };
 
 enum JsonRpcMethods {

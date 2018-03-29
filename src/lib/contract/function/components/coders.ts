@@ -45,7 +45,7 @@ export const encodeConstructor = (
     const encodedArgs = abi.rawEncode(inputTypes, args).toString('hex')
     return `0x${byteCode}${encodedArgs}`
   }
-  throw Error('could not find bytecode in the transaction object') //TODO move this error scope
+  throw Error('could not find bytecode in the transaction object')
 }
 
 export const decodeArguments = (

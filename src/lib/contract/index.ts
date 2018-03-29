@@ -15,7 +15,7 @@ import { IAbiBehaviour,
          IAbiFunction, 
          IFuncOutputMappings, 
          IContract, 
-         ConstructorArguments } from './typings';
+         IInstanceArguments } from './typings';
 
 export * from './typings'
 
@@ -43,7 +43,7 @@ export const CreateContract = <T>(
   return contract as T;
 };
 
-export const ContractInstance = async <T, K = {}>(contract: IContract, node: IProxiedNode, args: ConstructorArguments<K>) => { //TODO change constructorArguments to instantiationArguments
+export const ContractInstance = async <T, K = {}>(contract: IContract, node: IProxiedNode, args: IInstanceArguments<K>) => {
   const { parameters, txObj } = args
   if(typeof parameters === 'string'){
     const response = await node.eth_getCode(parameters);
@@ -97,7 +97,7 @@ const ConnectedContract = <T>(
           const mergedTxObj = isParamless
           ? { ...defaultTxObj, ...userArgs }
           : { ...defaultTxObj, ...txObj }
-          const methodArgs: any = { //TODO fix issue between ICallTxObj and methodArgs
+          const methodArgs: any = {
             func: contractMethod,
             node,
             txObj: mergedTxObj,

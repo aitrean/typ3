@@ -1,35 +1,36 @@
 import BN from 'bn.js'
 
 export interface IComplexContract{
-overloadedFunction: ABIFuncSend<{arg0: BN | Buffer,arg1: BN | Buffer}> | ABIFuncCall<{arg0: BN | Buffer},{0: BN | Buffer}>
-a: ABIFuncParamlessCall<{0: BN | Buffer}>
-callFunction1: ABIFuncCall<{arg0: BN | Buffer,arg1: string | Buffer},{output0: BN | Buffer,output1: string | Buffer}>
-sendFunction1: ABIFuncSend<{arg0: BN | Buffer,arg1: BN | Buffer}>
-b: ABIFuncParamlessCall<{0: string | Buffer}>
-sendFunction0: ABIFuncSend<{arg0: BN | Buffer}>
-callFunction0: ABIFuncCall<{arg0: BN | Buffer},{output0: BN | Buffer}>
-d: ABIFuncParamlessCall<{0: BN | Buffer}>
-c: ABIFuncParamlessCall<{0: BN | Buffer}>
-callFunctionDynamicUint: ABIFuncParamlessCall<{0: BN | Buffer}>
-callFunctionDynamicBytes: ABIFuncParamlessCall<{0: string | Buffer}>
+overloadedFunction: ABIFuncSend<{arg0: uint,arg1: uint}> | ABIFuncCall<{arg0: uint},{0: uint}>
+a: ABIFuncParamlessCall<{0: uint}>
+callFunction1: ABIFuncCall<{arg0: uint,arg1: bytes},{output0: uint,output1: bytes}>
+sendFunction1: ABIFuncSend<{arg0: int,arg1: int}>
+b: ABIFuncParamlessCall<{0: bytes}>
+sendFunction0: ABIFuncSend<{arg0: uint}>
+callFunction0: ABIFuncCall<{arg0: uint},{output0: uint}>
+d: ABIFuncParamlessCall<{0: uint}>
+c: ABIFuncParamlessCall<{0: int}>
+callFunctionDynamicUint: ABIFuncParamlessCall<{0: uint}>
+callFunctionDynamicBytes: ABIFuncParamlessCall<{0: bytes}>
 }
 export interface IComplexContractConnected {
 address: string
-overloadedFunction: ABIFuncSendConnected<{arg0: BN | Buffer,arg1: BN | Buffer}> | ABIFuncCallConnected<{arg0: BN | Buffer},{0: BN | Buffer}>
-a: ABIFuncParamlessCallConnected<{0: BN | Buffer}>;
-callFunction1: ABIFuncCallConnected<{arg0: BN | Buffer,arg1: string | Buffer},{output0: BN | Buffer,output1: string | Buffer}>;
-sendFunction1: ABIFuncSendConnected<{arg0: BN | Buffer,arg1: BN | Buffer}>;
-b: ABIFuncParamlessCallConnected<{0: string | Buffer}>;
-sendFunction0: ABIFuncSendConnected<{arg0: BN | Buffer}>;
-callFunction0: ABIFuncCallConnected<{arg0: BN | Buffer},{output0: BN | Buffer}>;
-d: ABIFuncParamlessCallConnected<{0: BN | Buffer}>;
-c: ABIFuncParamlessCallConnected<{0: BN | Buffer}>;
-callFunctionDynamicUint: ABIFuncParamlessCallConnected<{0: BN | Buffer}>;
-callFunctionDynamicBytes: ABIFuncParamlessCallConnected<{0: string | Buffer}>;
+overloadedFunction: ABIFuncSendConnected<{arg0: uint,arg1: uint}> | ABIFuncCallConnected<{arg0: uint},{0: uint}>
+a: ABIFuncParamlessCallConnected<{0: uint}>;
+callFunction1: ABIFuncCallConnected<{arg0: uint,arg1: bytes},{output0: uint,output1: bytes}>;
+sendFunction1: ABIFuncSendConnected<{arg0: int,arg1: int}>;
+b: ABIFuncParamlessCallConnected<{0: bytes}>;
+sendFunction0: ABIFuncSendConnected<{arg0: uint}>;
+callFunction0: ABIFuncCallConnected<{arg0: uint},{output0: uint}>;
+d: ABIFuncParamlessCallConnected<{0: uint}>;
+c: ABIFuncParamlessCallConnected<{0: int}>;
+callFunctionDynamicUint: ABIFuncParamlessCallConnected<{0: uint}>;
+callFunctionDynamicBytes: ABIFuncParamlessCallConnected<{0: bytes}>;
 }
 export interface IComplexContractConstructor {
-arg0: BN | Buffer,arg1: string | Buffer
+arg0: uint,arg1: bytes
 }
+
 
 export interface ISimpleContract{
 succeeded: ABIFuncParamlessCall<{0: boolean}>
@@ -40,6 +41,16 @@ succeeded: ABIFuncParamlessCallConnected<{0: boolean}>;
 }
 
 
+
+type int = string | BN
+type uint = string | BN
+type address = string
+type bytes = string | Buffer
+
+type ABIFuncCallConnected<T, K = void> = (x: T, txObj?: ICallTxObj) => Promise<K>;
+type ABIFuncParamlessCallConnected<T = void> = (txObj?: ICallTxObj) => Promise<T>;
+type ABIFuncSendConnected<T> = (x: T, txObj?: ITransactionObject) => Promise<string>;
+type ABIFuncParamlessSendConnected = (txObj?: ITransactionObject) => Promise<string>;
 
 interface ABIFuncParamlessCall<T = void> {
   encodeArguments(): string;
@@ -62,10 +73,6 @@ interface ABIFuncSend<T> {
   encodeArguments(x: T): string;
   decodeArguments(str: string): T;
 }
-type ABIFuncCallConnected<T, K = void> = (x: T, txObj?: ICallTxObj) => Promise<K>;
-type ABIFuncParamlessCallConnected<T = void> = (txObj?: ICallTxObj) => Promise<T>;
-type ABIFuncSendConnected<T> = (x: T, txObj?: ITransactionObject) => Promise<string>;
-type ABIFuncParamlessSendConnected = (txObj?: ITransactionObject) => Promise<string>;
 
 interface ITransactionObject {
   from?: string;

@@ -4,7 +4,7 @@ import { IHandleCallParams, IHandleSendParams, IHandleInitParams } from 'lib/con
 export const handleCall = async (args: IHandleCallParams) => {
   const { userArgs, func, node, txObj } = args;
   const data = func.encodeArguments(userArgs);
-  const response = await node.eth_call({ ...txObj, data }); //TODO add rejection handling
+  const response = await node.eth_call({ ...txObj, data });
   const parsedResponse = func.decodeReturnValue(response);
   return parsedResponse;
 };

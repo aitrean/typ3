@@ -10,10 +10,7 @@ const testNode = ProxiedNode(TEST_SERVER_ENDPOINT)
 
 //TODO clear port after throw events
 
-beforeAll(() => {
-  startServer();
-  jest.disableAutomock();
-})
+beforeAll(() => startServer());
 afterAll(() => stopServer());
 
 describe('contract instantiation', async () => {

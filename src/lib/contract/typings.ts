@@ -2,7 +2,7 @@ import { ITransactionObject, IProxiedNode } from '../node';
 export type IAbiBehaviour = IAbiConstructor | IAbiFunction
 export type IFuncOutputMappings = string[];
 
-export const ConstructorCall = 'new'  //TODO move this
+export const ConstructorCall = 'new'
 
 export enum AbiMethodTypes {
   function = 'function',
@@ -11,7 +11,6 @@ export enum AbiMethodTypes {
   filter = 'filter'
 }
 
-//TODO add stricter typing. TS wont throw if abi is used in place of Contract argument in ContractInstance factory, which may be a common problem
 export interface IContract {
   [behaviour: string]: any
 }
@@ -34,7 +33,7 @@ export interface IHandleInitParams {
   parameters?: object | undefined;
 }
 
-export interface ConstructorArguments<K> {
+export interface IInstanceArguments<K> {
   parameters?: string | K,
   txObj?: ITransactionObject
 }
