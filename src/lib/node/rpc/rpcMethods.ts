@@ -301,13 +301,6 @@ const db_getHex = (dbName: string, keyName: string, parser?: (value: any) => any
   parser,
   error
 });
-
-const shh_version = (parser?: (value: any) => any, error?: (value: any) => any) => ({
-  method: JsonRpcMethods.shh_version,
-  params: [],
-  parser,
-  error
-});
 /* tslint:enable */
 
 const rpcMethods: any = {
@@ -349,7 +342,6 @@ const rpcMethods: any = {
   db_getString,
   db_putHex,
   db_getHex,
-  shh_version,
 };
 
 enum JsonRpcMethods {
