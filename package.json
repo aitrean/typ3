@@ -4,11 +4,12 @@
   "description": "A fully typed, lightweight alternative to web3",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "tscheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Mike-Stupich/typed3.git"
+    "url": "git+https://github.com/MyCryptoHQ/typ3.git"
   },
   "keywords": [
     "typed3",
@@ -20,17 +21,40 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Mike-Stupich/typed3/issues"
+    "url": "https://github.com/MyCryptoHQ/typ3/issues"
   },
-  "homepage": "https://github.com/Mike-Stupich/typed3#readme",
   "dependencies": {
-    "bn.js": "^4.11.8",
-    "ethereumjs-abi": "^0.6.4",
-    "fetch": "^1.1.0",
-    "node-fetch": "^1.7.3"
+    "babel-plugin-transform-es2015-modules-commonjs": "6.26.0",
+    "bn.js": "4.11.8",
+    "ethereumjs-abi": "0.6.4",
+    "ethjs-util": "0.1.4",
+    "fetch": "1.1.0",
+    "ganache-cli": "6.1.0",
+    "node-fetch": "1.7.3",
+    "rlp": "2.0.0",
+    "source-map-support": "0.5.4",
+    "timeout-as-promise": "^1.0.0",
+    "types-rlp": "0.0.1",
+    "typescript": "2.7.2"
   },
   "devDependencies": {
-    "@types/node": "^8.0.34",
-    "@types/node-fetch": "^1.6.7"
+    "@types/jest": "^22.2.2",
+    "@types/node": "8.0.34",
+    "@types/node-fetch": "1.6.7",
+    "jest": "22.4.2",
+    "ts-jest": "22.4.1",
+    "tslint": "5.9.1",
+    "tslint-config-prettier": "1.10.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "/__tests__/.*\\.(ts|tsx|js)$"
   }
 }

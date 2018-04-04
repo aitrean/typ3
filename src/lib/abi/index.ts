@@ -1,1 +1,0 @@
-export { CreateContract } from './contract';

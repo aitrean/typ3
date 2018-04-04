@@ -3,14 +3,17 @@ import {
   makeArgHandlers,
   decodeArguments,
   decodeReturnValue,
-  encodeArguments
+  encodeArguments,
+  encodeConstructor
 } from './components/coders';
+import { IAbiFunction, IFuncOutputMappings, IFunctionFactory, IAugmentedAbiFunction, IAugmentedAbiConstructor, IConstructorFactory, IAbiConstructor, AbiMethodTypes } from '../typings';
 
+/* tslint:disable */
 export const FunctionFactory = (
   abiFunc: IAbiFunction,
   outputMappings: IFuncOutputMappings = []
 ): IFunctionFactory => {
-  const { inputs, outputs, name } = abiFunc;
+  const { inputs, name, outputs } = abiFunc;
   const argHandlers = makeArgHandlers(inputs);
   const inputTypes = inputs.map(({ type }) => type);
   const outputTypes = outputs.map(({ type }) => type);
@@ -19,7 +22,7 @@ export const FunctionFactory = (
     ({ name }, i) => name || outputMappings[i] || `${i}`
   );
   const methodSelector = abi.methodID(name, inputTypes).toString('hex');
-
+  /* tslint:enable */
   const augmentedFunc: IAugmentedAbiFunction = {
     abi: abiFunc,
     argHandlers,
@@ -33,6 +36,7 @@ export const FunctionFactory = (
   };
 
   return {
+    type: AbiMethodTypes.function,
     constant: augmentedFunc.abi.constant,
     paramless: augmentedFunc.abi.inputs.length === 0,
     decodeArguments: args => decodeArguments(args, augmentedFunc),
@@ -40,3 +44,25 @@ export const FunctionFactory = (
     encodeArguments: args => encodeArguments(args, augmentedFunc)
   };
 };
+
+export const ConstructorFactory = (
+  abiConstructor: IAbiConstructor
+): IConstructorFactory => {
+  const { inputs } = abiConstructor;
+  const argHandlers = makeArgHandlers(inputs);
+  const inputNames = inputs.map(({ name }) => name)
+  const inputTypes = inputs.map(({ type }) => type)
+  const augmentedConstructor: IAugmentedAbiConstructor = {
+    abi: abiConstructor,
+    argHandlers,
+    derived: {
+      inputNames,
+      inputTypes
+    }
+  }
+  return {
+    type: AbiMethodTypes.constructor,
+    paramless: augmentedConstructor.abi.inputs.length === 0,
+    encodeArguments: (args, byteCode) => encodeConstructor(args, byteCode, augmentedConstructor)
+  }
+}

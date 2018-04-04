@@ -1,18 +1,19 @@
+import { IAugmentedNode, INode, IRPCRequestObj } from './typings';
 import fetch from 'node-fetch';
 
 export const NodeFactory = (endpoint: string): IAugmentedNode => {
   const node: INode = { endpoint };
   return {
     node,
-    setEndpoint: (endpoint: string) => setEndpoint(endpoint, node),
+    setEndpoint: (end: string) => setEndpoint(end, node),
     sendRpcRequest: (request: IRPCRequestObj) => sendRpcRequest(request, node)
   };
 };
 
-const setEndpoint = (endpoint: string, node: INode) =>
+export const setEndpoint = (endpoint: string, node: INode) =>
   (node.endpoint = endpoint);
 
-const sendRpcRequest = async (request: IRPCRequestObj, node: INode) => {
+export const sendRpcRequest = async (request: IRPCRequestObj, node: INode) => {
   const { txObj, postprocessor, errorHandler } = request;
   const response = await fetch(node.endpoint, {
     method: 'POST',

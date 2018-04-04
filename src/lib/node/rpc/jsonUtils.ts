@@ -1,17 +1,18 @@
+import { ITransactionObject } from '../typings';
 import { randomBytes } from 'crypto';
 
-const generateId = (): String => randomBytes(16).toString('hex');
+export const generateId = (): string => randomBytes(16).toString('hex');
 
-export const generateTxObj = tx => ({
+export const generateTxObj = (tx: ITransactionObject) => ({
   id: generateId(),
   jsonrpc: '2.0',
   ...tx
 });
 
-export const JSONPostParser = (parser: any = null) => ({ result }) =>
-  parser && typeof parser === 'function' ? parser(result) : result;
+export const JSONPostProcessor = (handler: any = null) => ({ result }: any) =>
+  handler && typeof handler === 'function' ? handler(result) : result;
 
-export const JSONErrorHandler = (handler: any = null) => e => {
+export const JSONErrorHandler = (handler: any = null) => (e: Error) => {
   if (handler && typeof handler === 'function') {
     return handler(e);
   } else {

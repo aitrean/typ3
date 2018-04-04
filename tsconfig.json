@@ -2,8 +2,11 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "sourceMap": true,
+    "noImplicitAny": true,
     "strictNullChecks": true,
     "target": "es2015",
+    "lib": ["es2016"],
+    "baseUrl": "./src/",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",

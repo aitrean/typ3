@@ -1,16 +1,20 @@
-import { generateTxObj, JSONPostParser, JSONErrorHandler } from './jsonUtils';
+import { ITransactionObject, IEstimateGasObj, IBlockNumber, IFilterOptions, IRPCRequestObj, IAugmentedNode } from './../typings';
+import { generateTxObj, JSONPostProcessor, JSONErrorHandler } from './jsonUtils';
+import { IProxiedNode } from '../typings'
 
-const eth_sendRawTransaction = (tx: String) => ({
+//TODO review these param signatures
+/* tslint:disable */
+const eth_sendRawTransaction = (tx: string) => ({
   method: JsonRpcMethods.eth_sendRawTransaction,
   params: [tx, 'pending']
 });
 
-const eth_call = (call: ICallTxObj) => ({
+const eth_call = (call: ITransactionObject) => ({
   method: JsonRpcMethods.eth_call,
   params: [call, 'pending']
 });
 
-const eth_sendTransaction = (tx: ITransactionObj) => ({
+const eth_sendTransaction = (tx: ITransactionObject) => ({
   method: JsonRpcMethods.eth_sendTransaction,
   params: [tx]
 });
@@ -67,12 +71,14 @@ const eth_getBlockTransactionCountByNumber = (blocknumber: IBlockNumber) => ({
 
 const eth_getCode = (address: string) => ({
   method: JsonRpcMethods.eth_getCode,
-  params: ['pending']
+  params: [address, 'latest']
 });
 
-const eth_getFilterChanges = (filterId: string) => ({
+const eth_getFilterChanges = (filterId: string, parser?: any, error?: any) => ({
   method: JsonRpcMethods.eth_getFilterChanges,
-  params: [filterId]
+  params: [filterId],
+  parser: parser,
+  error: error
 });
 
 const eth_getFilterLogs = (filterId: string) => ({
@@ -161,9 +167,11 @@ const eth_compileSerpent = (source: string) => ({
   params: [source]
 });
 
-const eth_newFilter = (filterObj: IFilterOptions) => ({
+const eth_newFilter = (filterObj: IFilterOptions, parser?: any, error?: any) => ({
   method: JsonRpcMethods.eth_newFilter,
-  params: [filterObj]
+  params: [filterObj],
+  parser: parser,
+  error: error
 });
 
 const eth_newBlockFilter = () => ({
@@ -271,8 +279,9 @@ const shh_getMessages = (filterId: string) => ({
   method: shh_getMessages,
   params: [filterId]
 });
+/* tslint:enable */
 
-const rpcMethods = {
+const rpcMethods: any = {
   eth_call,
   eth_sendRawTransaction,
   eth_sendTransaction,
@@ -323,33 +332,6 @@ const rpcMethods = {
   shh_getMessages
 };
 
-export const rerouteRPCMethodsHandler = obj => {
-  const rerouteRPC = {
-    get(node: IAugmentedNode, propKey) {
-      const rpcMethod = rpcMethods[propKey];
-      const nodeMethod = node[propKey];
-      if (!rpcMethod && !nodeMethod) {
-        throw Error(`${propKey} is not an RPC or Node method`);
-      }
-      if (nodeMethod) {
-        const result = (...args) => nodeMethod(...args);
-        return result;
-      } else {
-        return (...args) => {
-          const call = rpcMethod(...args);
-          const rpcObj: IRPCRequestObj = {
-            txObj: generateTxObj(call),
-            postprocessor: JSONPostParser(call.parser),
-            errorHandler: JSONErrorHandler(call.errorHandler)
-          };
-          return node.sendRpcRequest(rpcObj);
-        };
-      }
-    }
-  };
-  return new Proxy(obj, rerouteRPC);
-};
-
 enum JsonRpcMethods {
   web3_clientVersion = 'web3_clientVersion',
   web3_sha3 = 'web3_sha3',
@@ -381,7 +363,6 @@ enum JsonRpcMethods {
   eth_getBlockByNumber = 'eth_getBlockByNumber',
   eth_getTransactionByHash = 'eth_getTransactionByHash',
   eth_getTransactionByBlockHashAndIndex = 'eth_getTransactionByBlockHashAndIndex',
-
   eth_getTransactionByBlockNumberAndIndex = 'eth_getTransactionByBlockNumberAndIndex',
   eth_getTransactionReceipt = 'eth_getTransactionReceipt',
   eth_getUncleByBlockHashAndIndex = 'eth_getUncleByBlockHashAndIndex',
@@ -415,3 +396,30 @@ enum JsonRpcMethods {
   shh_getFilterChanges = 'shh_getFilterChanges',
   shh_getMessages = 'shh_getMessages'
 }
+
+export const rerouteRPCMethodsHandler = (obj: IAugmentedNode) => {
+  const rerouteRPC = {
+    get(node: IAugmentedNode, propKey: string) {
+      const rpcMethod = rpcMethods[propKey];
+      const nodeMethod = node[propKey];
+      if (!rpcMethod && !nodeMethod) {
+        throw Error(`${propKey} is not an RPC or Node method`);
+      }
+      if (nodeMethod) {
+        const result = (...args: any[]) => nodeMethod(...args);
+        return result;
+      } else {
+        return (...args: any[]) => {
+          const call = rpcMethod(...args);
+          const rpcObj: IRPCRequestObj = {
+            txObj: generateTxObj(call) as any,
+            postprocessor: JSONPostProcessor(call.parser),
+            errorHandler: JSONErrorHandler(call.errorHandler)
+          };
+          return node.sendRpcRequest(rpcObj);
+        };
+      }
+    }
+  };
+  return new Proxy(obj, rerouteRPC) as IProxiedNode;
+};
