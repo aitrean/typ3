@@ -9,7 +9,7 @@ These packages are meant to be used in a Typescript, ES6 environment. Tests use 
 
 ### Installing
 
-```
+```.ts
 npm install typ3
 
 npm install @types/typ3
@@ -18,7 +18,7 @@ npm install @types/typ3
 
 And we have our components!
 
-```
+```.ts
 import {ProxiedNode, CreateContract, ContractInstance, Filter} from 'typ3'
 
 ```
@@ -31,7 +31,7 @@ This is a factory function that will instantiate a node proxy object that repres
 #### Parameters:
 Endpoint: The HTTP endpoint of the node.
 
-```
+```.ts
 import { ProxiedNode } from 'typ3'
 
 const myNode = ProxiedNode('http://localhost:8545')
@@ -49,7 +49,7 @@ This is a factory function that will instantiate a raw contract proxy based on a
 
 abi: The abi JSON object, parsed from an abi file.
 
-```
+```.ts
 import { IAbiInterface } from './abiTypes'
 const myAbi = require('./abiFile.json');
 const testContract = CreateContract<IAbiInterface>(testAbi)
