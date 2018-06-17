@@ -34,7 +34,7 @@ export interface IHandleInitParams {
 }
 
 export interface IInstanceArguments<K> {
-  parameters?: string | K,
+  parameters?: string | object,
   txObj?: ITransactionObject
 }
 
