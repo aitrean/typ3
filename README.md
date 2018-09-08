@@ -67,9 +67,11 @@ Using a proxied node, and a raw contract, the ContractInstance will generate a C
 
 #### Parameters and Typings
 \<T> : Interface
+
 The interface for the Connected Contract. This is generated from the typ3-cli, and used to bind typings onto the proxy.
 
 \<K> : Interface (optional)
+
 In order to bind typings to the constructor call, you can specify a second, optional typing argument that is generated from the typ3-cli.
 
 node: ProxiedNode
