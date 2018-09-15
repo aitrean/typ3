@@ -1,3 +1,4 @@
+import { IAugmentedAbiEvent, ITopics } from './../../typings';
 import * as abi from 'ethereumjs-abi';
 import {
   parsePostDecodedValue,
@@ -7,6 +8,7 @@ import {
 import { objReduce } from './utils';
 import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs, IAugmentedAbiConstructor, ArgumentsObject } from 'lib/contract/typings';
 
+//TODO remove argHandlers abstraction completely?
 export const makeArgHandlers = (inputs: IAbiFunction['inputs']): IFuncArgs => {
   const reducer = (accumulator: IFuncArgs, currInput: IAbiFunction) => {
     const { name, type } = currInput;
@@ -50,19 +52,18 @@ export const encodeConstructor = (
 
 export const decodeArguments = (
   argString: string,
-  func: IAugmentedAbiFunction
+  func: IAugmentedAbiFunction | IAugmentedAbiEvent
 ): IDecode => {
-  const { methodSelector, derived: { inputNames, inputTypes } } = func;
+  const { methodSelector, derived: { outputNames, outputTypes } } = func;
   // Remove method selector from data, if present
   argString = argString.replace(`0x${methodSelector}`, '');
   // Convert argdata to a hex buffer for ethereumjs-abi
   const argBuffer = new Buffer(argString, 'hex');
-  // Decode!
-  const argArr = abi.rawDecode(inputTypes, argBuffer);
+  const argArr = abi.rawDecode(outputTypes, argBuffer);
 
   const reducer = (argObj: ArgumentsObject, currArg: any, index: number) => {
-    const currName = inputNames[index];
-    const currType = inputTypes[index];
+    const currName = outputNames[index];
+    const currType = outputTypes[index];
     return {
       ...argObj,
       [currName]: parsePostDecodedValue(currType, currArg)

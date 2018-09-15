@@ -1,5 +1,5 @@
 import { ITransactionObject, IProxiedNode } from '../node';
-export type IAbiBehaviour = IAbiConstructor | IAbiFunction
+export type IAbiBehaviour = IAbiConstructor | IAbiFunction | IAbiEvent
 export type IFuncOutputMappings = string[];
 
 export const ConstructorCall = 'new'
@@ -49,6 +49,7 @@ export interface IOutputMappings {
 export interface Selector {
   [AbiMethodTypes.function]: any
   [AbiMethodTypes.constructor]: any
+  [AbiMethodTypes.event]: any
 }
 
 export interface Contract {
@@ -75,6 +76,12 @@ export interface IConstructorFactory {
   encodeArguments(args: any, byteCode: string | undefined): string;
 }
 
+export interface IEventFactory {
+  signature: string
+  type: AbiMethodTypes.event
+  decodeArguments(args: any, byteCode: string | undefined): IDecode;
+}
+
 export interface IAbiFunction {
   type: AbiMethodTypes.function;
   name: string;
@@ -94,6 +101,7 @@ export interface IAbiConstructor {
 export interface IAbiEvent {
   name: string
   type: AbiMethodTypes.event
+  outputs: IO[]
 }
 
 export interface IAugmentedAbiFunction {
@@ -111,13 +119,10 @@ export interface IAugmentedAbiFunction {
 export interface IAugmentedAbiEvent {
   abi: IAbiEvent;
   derived: {
-    inputTypes: string[];
     outputTypes: string[];
-    inputNames: string[];
     outputNames: string[];
-  }
-  methodSelector: string
-  argHAndlers: IFuncArgs
+  };
+  methodSelector: string; 
 }
 
 export interface IAugmentedAbiConstructor {
@@ -147,4 +152,8 @@ export interface IDecode {
 
 export interface IUserSuppliedArgs {
   [argumentName: string]: any;
+}
+
+export interface ITopics {
+  [name: string]: string
 }

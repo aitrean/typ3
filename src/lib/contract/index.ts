@@ -1,11 +1,14 @@
+import { FilterFactory } from './../filter/filter';
 import { pollFilter } from './../filter/poll';
 import { ITransactionObject } from './../node/typings';
 import { handleInit, handleCall, handleSend } from './function/handlers';
 import { IProxiedNode } from './../node/index';
-import { ConstructorFactory, FunctionFactory } from './function/factories';
+import { ConstructorFactory, FunctionFactory, EventFactory } from './function/factories';
 import { objReduce } from './function/components/utils';
 import { IAbiBehaviour, 
          IFunctionFactory,
+         IConstructorFactory,
+         IEventFactory,
          IOutputMappings, 
          Contract, 
          IAbiConstructor, 
@@ -15,6 +18,7 @@ import { IAbiBehaviour,
          IAbiFunction, 
          IFuncOutputMappings, 
          IContract, 
+         IAbiEvent,
          IInstanceArguments } from './typings';
 
 export * from './typings'
@@ -36,6 +40,11 @@ export const CreateContract = <T>(
         return {
           ...compiledContract,
           [ConstructorCall]: handler(currMethod)
+        }
+      case AbiMethodTypes.event:
+        return {
+          ...compiledContract,
+          [name]: handler(currMethod)
         }
     }
   }
@@ -81,30 +90,42 @@ const ConnectedContract = <T>(
       if (!Object.getOwnPropertyNames(contract).includes(propKey)) {
         return contract[propKey];
       }
-      const contractMethod: IFunctionFactory = contract[propKey];
-      if (!contractMethod) {
+      const contractMethod: IFunctionFactory | IConstructorFactory | IEventFactory = contract[propKey];
+      if (!contractMethod){
         throw Error(`${propKey} is not a valid contract method`);
       }
       if (contractMethod.type.toString() === AbiMethodTypes.constructor){
         throw Error('cannot directly invoke constructor or fallback on a deployed instance')
       }
-      return (
-        userArgs: any[],
-        txObj: ITransactionObject
-      ) => {
-          const isConstant = contractMethod.constant;
-          const isParamless = contractMethod.paramless;
-          const mergedTxObj = isParamless
-          ? { ...defaultTxObj, ...userArgs }
-          : { ...defaultTxObj, ...txObj }
-          const methodArgs: any = {
-            func: contractMethod,
-            node,
-            txObj: mergedTxObj,
-            userArgs: isParamless ? null : userArgs
-          };
-          return isConstant ? handleCall(methodArgs) : handleSend(methodArgs);
-      };
+      if(contractMethod.type.toString() === AbiMethodTypes.constructor || contractMethod.type.toString() === AbiMethodTypes.function){
+        return (
+          userArgs: any[],
+          txObj: ITransactionObject
+        ) => {
+            const isConstant = contractMethod.constant;
+            const isParamless = contractMethod.paramless;
+            const mergedTxObj = isParamless
+            ? { ...defaultTxObj, ...userArgs }
+            : { ...defaultTxObj, ...txObj }
+            const methodArgs: any = {
+              func: contractMethod,
+              node,
+              txObj: mergedTxObj,
+              userArgs: isParamless ? null : userArgs
+            };
+            return isConstant ? handleCall(methodArgs) : handleSend(methodArgs);
+        };
+      } else if (contractMethod.type.toString() === AbiMethodTypes.event){
+        return (//node, TODO do we really need to define the node?
+                checkFor?: {}, //additional searching to add to the query
+                callback?: any //TODO define this as a function type
+                ) => {
+                  const query = {
+                    contractMethod.signature,
+                  }
+                  return FilterFactory(node, {}, callback)
+                }
+      }
     }
   };
   return new Proxy(contract, routeCalls) as T;
@@ -133,4 +154,8 @@ const selector: Selector = {
   [AbiMethodTypes.constructor]: (
     abiFunc: IAbiConstructor,
   ) => ConstructorFactory(abiFunc),
+
+  [AbiMethodTypes.event]: (
+    abiFunc: IAbiEvent
+  ) => EventFactory(abiFunc)
 };

@@ -1,3 +1,4 @@
+import { IAbiEvent, IEventFactory, IAugmentedAbiEvent } from './../typings';
 import * as abi from 'ethereumjs-abi';
 import {
   makeArgHandlers,
@@ -66,3 +67,30 @@ export const ConstructorFactory = (
     encodeArguments: (args, byteCode) => encodeConstructor(args, byteCode, augmentedConstructor)
   }
 }
+
+/* tslint:disable */
+export const EventFactory = (
+  abiEvent: IAbiEvent
+): IEventFactory => {
+  const { name, outputs } = abiEvent;
+  const outputNames: string[] = outputs.map(
+    ({ name }, i) => name || `${i}`
+  );
+  const outputTypes = outputs.map(({ type }) => type)
+  const methodSelector = abi.methodID(name, outputTypes).toString('hex')
+  const augmentedEvent: IAugmentedAbiEvent = {
+    abi: abiEvent,
+    derived: {
+      outputNames,
+      outputTypes
+    },
+    methodSelector
+  }
+  return {
+    signature: methodSelector,
+    type: AbiMethodTypes.event,
+    decodeArguments: args => decodeArguments(args, augmentedEvent)
+  }
+}
+/* tslint:enable */
+//TODO KEEP TSLINT ENABLED AND FIX SHADOWED VARIABLES

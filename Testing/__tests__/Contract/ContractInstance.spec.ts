@@ -18,7 +18,7 @@ describe('contract instantiation', async () => {
   const uintArgument = new BN('100000000');
   let addresses: any = []
 
-  beforeEach( async () => {
+  beforeEach(async () => {
     addresses = await testNode.eth_accounts()
   })
 
@@ -65,14 +65,4 @@ describe('contract instantiation', async () => {
     expect((await testInstance.a())[0]).toEqual(uintArgument.toString())
     expect((await testInstance.b())[0]).toEqual(bytesArgument)
   })
-
-  //To be supported with overloaded functions PR
-  /*
-  it('should deploy a contract and invoke two different methods with the same name', async () => {
-    const testAbi = require('../../Contracts/complex/complexContract.json');
-    const testContract = CreateContract<IComplexContract>(testAbi)
-    const testInstance = await ContractInstance<IComplexContractConnected>(testContract, testNode, {parameters: {arg0: uintArgument, arg1: bytesArgument}, txObj: {data: complexContractBytecode, from: '0x06e854758939a6125febce9efcdbe80031dd059d', gas: '90000'}})
-    expect(await testInstance.overloadedFunction({arg0: uintArgument})).toEqual(uintArgument)
-    expect((await testInstance.overloadedFunction({arg0: intArgument0, arg1: intArgument1}))[0]).toEqual(intArgument0.add(intArgument1))
-  })*/
 })
