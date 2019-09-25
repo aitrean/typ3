@@ -8,7 +8,6 @@ import {
 import { objReduce } from './utils';
 import { IAugmentedAbiFunction, IDecode, IAbiFunction, IFuncArgs, IArgs, IAugmentedAbiConstructor, ArgumentsObject } from 'lib/contract/typings';
 
-//TODO remove argHandlers abstraction completely?
 export const makeArgHandlers = (inputs: IAbiFunction['inputs']): IFuncArgs => {
   const reducer = (accumulator: IFuncArgs, currInput: IAbiFunction) => {
     const { name, type } = currInput;
